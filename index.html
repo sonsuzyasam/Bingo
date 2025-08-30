@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <!-- SEO Meta Etiketleri -->
+  <meta name="description" content="BingoBala ile dijital bingo çekilişi, sesli numara okuma, PDF kart üretimi ve offline güvenli kullanım. Okullar, aileler ve etkinlikler için ideal!" />
+  <meta name="keywords" content="bingo, çekiliş, dijital bingo, pdf bingo kartı, sesli bingo, offline bingo, okul çekilişi, aile oyunu, etkinlik aracı, tombala" />
+  <meta name="robots" content="index, follow" />
+  <meta property="og:title" content="BingoBala - Dijital Bingo ve Çekiliş Uygulaması" />
+  <meta property="og:description" content="Dijital bingo çekilişi, sesli okuma ve PDF kart üretimi. Offline, güvenli ve mobil uyumlu!" />
+  <meta property="og:type" content="website" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="google-adsense-account" content="ca-pub-7309845525285029">
+  <title>BingoBala</title>
+  <link rel="stylesheet" href="./style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7309845525285029"
+     crossorigin="anonymous"></script>
+</head>
+<body>
+  
+  <header class="topbar">
+    <h1>90-Ball Bingo</h1>
+    <div class="actions">
+      <button id="btn-call" class="btn">Numara Çek (TTS)</button>
+      <button id="btn-reset" class="btn btn-ghost">Sıfırla</button>
+      <button id="btn-pdf" class="btn btn-primary">PDF Üret</button>
+    </div>
+  </header>
+
+    <!-- SOL: Ayarlar + Çekiliş Listesi -->
+    <section class="panel">
+      <details open>
+        <summary>Ayarlar</summary>
+
+        <div class="row">
+          <label class="label">Yazı Kaynağı</label>
+          <div class="field">
+            <label><input type="radio" name="src" id="src-local"> Yerel JSON</label>
+            <input type="file" id="local-file" accept=".json" disabled />
+            <label><input type="radio" name="src" id="src-preset" checked> Hazır Preset</label>
+            <select id="preset-select">
+              <option value="valentine">Valentine (romantik)</option>
+            </select>
+            <label><input type="radio" name="src" id="src-custom"> Özel Metin</label>
+            <input type="text" id="custom-text" placeholder="Örn: OKUL ÇEKİLİŞİ" disabled />
+            <span id="bands-info" class="hint">—</span>
+          </div>
+        </div>
+
+        <div class="row">
+          <label class="label">Band Rengi</label>
+          <input type="color" id="opt-band-color" value="#ff7a00" />
+          <label class="label">Yazı Rengi</label>
+          <input type="color" id="opt-band-text-color" value="#000000" />
+        </div>
+
+        <div class="row">
+          <label class="label">Seri No:</label>
+          <input type="number" id="opt-serial-start" value="1" min="1" />
+          <label class="label">Sayfa Sayısı</label>
+          <input type="number" id="opt-pages" value="1" min="1" />
+          <label class="label">Dosya Adı</label>
+          <input type="text" id="opt-basename" value="bingo_" />
+        </div>
+
+        <div class="row">
+          <label class="label">Dil (TTS)</label>
+          <select id="opt-lang">
+            <option value="auto" selected>Otomatik (sistem)</option>
+            <option value="tr-TR">Türkçe</option>
+            <option value="en-US">English</option>
+            <option value="hi-IN">Hindi</option>
+            <option value="de-DE">Deutsch</option>
+            <option value="fr-FR">Français</option>
+          </select>
+        </div>
+
+           </details>
+
+      <!-- Tek blok: 6 satır × 15 sütun (1–15, 16–30, …, 76–90) -->
+      <div class="list-block">
+        <div class="list-head">Çekiliş Listesi</div>
+        <div id="board-90" class="board90"></div>
+      </div>
+    </section>
+
+    <!-- SAĞ: Son sayı + Çıkan (çekiliş sırası) / Kalan -->
+    <section class="panel" id="caller">
+      <h3>Çekiliş</h3>
+      <div id="last-number" class="last-number">–</div>
+
+      <div class="two-col">
+        <div class="list-block">
+          <div class="list-head">Çıkan Sayılar</div>
+          <div id="drawn-grid" class="box-grid"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+<h1>BingoBala Nedir?</h1>
+  <p>BingoBala, klasik tombala oyununun birleştirilmesiyle oluşmuştur. Bu sayfa da yapabilecekleriniz: Yazdırılabilir 90 Balls Bingo kartları oluşturabilir. Başlık yazılarını istediğiniz şekilde değiştirebilirsiniz.</p>
+  <p>BingoBala, Ayrıca size bingo numara oluşturucusu da sunmaktadır. Çekilen numaralar otomatik olarak listeye işlenir. Kendi özel numara setlerinizi oluşturabilirsiniz. Çıkan sayıları sıralı bir şekilde görüntüleyebilirsiniz.</p>
+  <h2>Nasıl Kullanılır?</h2>
+  <ul>
+    <li>Ayarlardan band rengi ve yazı rengini seçin.</li>
+    <li>Seri No ve Sayfa Sayısını belirleyin.</li>
+    <li>Hazır bir preset seçin veya özel metin girin.</li>
+    <li>Pdf üret e tıklayın ve dosyanız yüklensin</li>
+  </ul>
+    <h2>Yasal Uyarı</h2>
+  <p>Bu oyun herhangi bir kumar unsuru içermez.Tüm içerikler AdSense ve yerel yasalara uygun şekilde düzenlenmiştir.</p>
+
+  <main class="container">
+    <!-- Bilgilendirme Bölümü (SEO uyumlu) -->
+    <section class="info-panel" style="margin-bottom:24px; background:#fffbe7; border-radius:8px; padding:20px; box-shadow:0 2px 8px #0001;">
+      <div style="margin:32px 0; text-align:left; background:#f8f8ff; border-radius:8px; padding:18px; box-shadow:0 1px 4px #0001;">
+        <h2>Kullanım Talimatları & Oyun Kuralları</h2>
+        <ol style="font-size:1.08em; line-height:1.7;">
+          <li>En az iki oyuncuyla oynanabilir, kalabalık ortamlarda çok daha eğlenceli hale gelir.</li>
+          <li> Kartlar PDF çıktısı olarak alınabilir.İster yazdırılabilir ister dijital ortamda kullanılabilir.</li>
+          <li>Kartları işaretlemek için en keyiflisi dot marker kalemlerdir:Ancak; <b>keçeli kalem, fosforlu kalem, tükenmez kalem</b> veya <b>kurşun kalem</b> kullanılabilir. Renkli kalemler önerilir.</li>
+          <li>"Numara Çek" butonuna tıklanarak rastgele bir sayı çekilir ve sesli olarak okunur.</li>
+          <li>Yatay aynı hizada ki 3 satırdan herhangi birinde 5 numarayı ilk tamamlayan 1. Çinko yapar, Kartta Yatay aynı hizada 10 numarayı ilk tamamlayan 2. Çinko Yapar.Tüm kartı yani 15 numarayı ilk tamamlayan oyuncu "Bingo" diyerek oyunu kazanır.</li>
+          <li> Tombala yada Bingo yapıldıktan sonra:Sıfırla Düğmesine basarak oyunu yeniden başlatabilirsiniz.</li>
+
+        </ol>
+        <h3>Yasal Uyarı</h3>
+        <p>Bu uygulama yalnızca eğlence ve sosyal etkinlik amaçlıdır. Herhangi bir kumar, bahis veya maddi ödül unsuru içermez. Kartlar ve çekilişler tamamen dijital ve offline olarak çalışır. Kullanıcı verisi toplanmaz. AdSense ve yerel yasalara uygundur.</p>
+      </div>
+      <div style="margin:24px 0; text-align:center;">
+        <h2>Örnek Bingo Kartları</h2>
+        <img src="assets/image-1756416474625.png" alt="Örnek Bingo Kartı 1" style="max-width:45%; margin:8px; border-radius:8px; box-shadow:0 2px 8px #0002;">
+        <img src="assets/image-1756416518551.png" alt="Örnek Etiketli Bingo Kartı 2" style="max-width:45%; margin:8px; border-radius:8px; box-shadow:0 2px 8px #0002;">
+      </div>
+      <header>
+        <h1>BingoBala - Dijital Bingo ve Çekiliş Uygulaması</h1>
+      </header>
+      <article>
+        <p><strong>BingoBala</strong>, klasik tombala ve bingo oyununu dijitalleştirerek, 90 toplu çekilişler için modern bir çözüm sunar. Numara çekme, sesli okuma (TTS), PDF kart üretimi ve çekiliş takibi gibi özelliklerle hem eğlenceli hem de pratik bir deneyim sağlar.</p>
+        <nav style="margin-top:18px;">
+          <strong>Diğer Uygulamalar ve Ana Sayfa:</strong>
+          <ul style="margin:8px 0 0 0; padding:0; list-style:none;">
+            <li><a href="https://sonsuzyasam.github.io/" target="_blank" rel="noopener">sonsuzyasam.github.io (Ana Sayfa)</a></li>
+            <li><a href="https://sonsuzyasam.github.io/taksi-hesaplama/" target="_blank" rel="noopener">Taksi Hesaplama</a></li>
+            <!-- Diğer uygulama linklerini buraya ekleyebilirsiniz -->
+          </ul>
+        </nav>
+        <h2>Özellikler</h2>
+        <ul>
+          <li>Dijital bingo panosu ve otomatik işaretleme</li>
+          <li>Sesli numara okuma (TTS) desteği</li>
+          <li>PDF kart üretimi ve kişiselleştirme</li>
+          <li>Offline ve güvenli kullanım</li>
+          <li>Mobil uyumlu arayüz</li>
+        </ul>
+        <h2>Kullanım Alanları</h2>
+        <ul>
+          <li>Okullar ve eğitim kurumları</li>
+          <li>Dernekler, vakıflar ve sosyal gruplar</li>
+          <li>Aile içi eğlence ve ev partileri</li>
+          <li>Online veya fiziksel etkinlikler</li>
+        </ul>
+        <h2>Nasıl Kullanılır?</h2>
+        <ol>
+          <li>Band rengi, yazı rengi, seri no ve sayfa sayısı gibi ayarları yapın.</li>
+          <li>Hazır bir preset seçin veya özel metin girin.</li>
+          <li>"Numara Çek (TTS)" butonuna tıklayın, çekilen sayılar otomatik işaretlenir ve sesli okunur.</li>
+          <li>PDF kart üretmek için ilgili butonu kullanın.</li>
+        </ol>
+        <h2>Avantajları</h2>
+        <ul>
+          <li>Ücretsiz ve offline çalışır</li>
+          <li>Kişisel veri toplamaz</li>
+        <p>BingoBala,Ya da Tombala 90 toplu klasik Bingo Tombala oyunu ve çekilişler için geliştirilmiş, tamamen tarayıcıda çalışan bir dijital uygulamadır. Modern web teknolojileriyle hazırlanmış bu araç, hem eğlenceli hem de pratik bir çekiliş deneyimi sunar.</p>
+
+
+        </ul>
+        <h2>Yasal Uyarı</h2>
+        <p>Bu uygulama herhangi bir kumar unsuru içermez. Tüm içerikler yerel yasalara uygun şekilde düzenlenmiştir.</p>
+      </article>
+    </section>
+  <footer class="footer">
+    <small>© BingoBala— Offline çalışır, veri toplamaz.</small>
+      <small>© BingoBala — Offline çalışır, veri toplamaz.<br>
+        <a href="https://sonsuzyasam.github.io/" target="_blank" rel="noopener">Ana Sayfa</a> |
+        <a href="https://sonsuzyasam.github.io/taksi-hesaplama/" target="_blank" rel="noopener">Taksi Hesaplama</a>
+      </small>
+    
+    <!-- Google AdSense Reklamı -->
+    <div style="margin-top:16px; text-align:center;">
+      <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7309845525285029"
+        crossorigin="anonymous"></script>
+      <ins class="adsbygoogle"
+        style="display:block; text-align:center;"
+        data-ad-client="ca-pub-7309845525285029"
+        data-ad-slot="1234567890"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+      <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+    </div>
+  </footer>
+
+  <script defer src="./bingo.js"></script>
+</body>
+</html>
+
+
+  
