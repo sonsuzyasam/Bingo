@@ -22,16 +22,43 @@
   <header class="topbar">
     <h1>90-Ball Bingo</h1>
       <div class="actions">
-        <button id="btn-call" class="btn">Numara Çek (TTS)</button>
+  <button id="btn-call" class="btn" style="font-size:24pt;">Numara Çek (TTS)</button>
       </div>
-      <div style="margin-top:12px; text-align:left;">
-        <button id="btn-pdf" class="btn btn-primary">PDF Üret</button>
+      <div style="margin-top:16px; text-align:left;">
+        <label for="auto-call-select" style="font-size:1.1em; font-weight:500;">Otomatik Numara Çek:</label>
+        <select id="auto-call-select" style="font-size:18pt; margin-left:8px;">
+          <option value="0">Kapalı</option>
+          <option value="3">3 saniye</option>
+          <option value="5">5 saniye</option>
+          <option value="10">10 saniye</option>
+        </select>
+        <button id="btn-auto-call-stop" class="btn btn-ghost" style="margin-left:8px; font-size:1em;">Durdur</button>
       </div>
   </header>
 
-    <!-- SOL: Ayarlar + Çekiliş Listesi -->
+    <!-- SAĞ: Çıkan Sayılar (En üstte) -->
+    <section class="panel" id="caller" style="display:flex; gap:32px; align-items:flex-start;">
+      <div style="min-width:120px;">
+        <h3>Çekiliş</h3>
+        <div id="last-number" class="last-number">–</div>
+      </div>
+      <div class="list-block" style="flex:1;">
+        <div class="list-head">Çıkan Sayılar</div>
+        <div id="drawn-grid" class="box-grid"></div>
+      </div>
+    </section>
+
+    <!-- SOL: Ayarlar + Çekiliş Listesi (Artık altta) -->
     <section class="panel">
-      <details open>
+      <!-- Tek blok: 6 satır × 15 sütun (1–15, 16–30, …, 76–90) -->
+      <div class="list-block">
+        <div class="list-head">Çekiliş Listesi</div>
+          <div style="margin-bottom:12px; text-align:left;">
+            <button id="btn-reset" class="btn btn-ghost" style="font-size:24pt;">Sıfırla</button>
+          </div>
+        <div id="board-90" class="board90"></div>
+      </div>
+  <details open style="margin-top:24px;">
         <summary>Ayarlar</summary>
 
         <div class="row">
@@ -76,30 +103,10 @@
             <option value="fr-FR">Français</option>
           </select>
         </div>
-
-           </details>
-
-      <!-- Tek blok: 6 satır × 15 sütun (1–15, 16–30, …, 76–90) -->
-      <div class="list-block">
-        <div class="list-head">Çekiliş Listesi</div>
-          <div style="margin-bottom:12px; text-align:left;">
-            <button id="btn-reset" class="btn btn-ghost">Sıfırla</button>
-          </div>
-        <div id="board-90" class="board90"></div>
-      </div>
-    </section>
-
-    <!-- SAĞ: Son sayı + Çıkan (çekiliş sırası) / Kalan -->
-    <section class="panel" id="caller">
-      <h3>Çekiliş</h3>
-      <div id="last-number" class="last-number">–</div>
-
-      <div class="two-col">
-        <div class="list-block">
-          <div class="list-head">Çıkan Sayılar</div>
-          <div id="drawn-grid" class="box-grid"></div>
+        <div style="margin-top:18px; text-align:left;">
+          <button id="btn-pdf" class="btn btn-primary" style="font-size:24pt;">PDF Üret</button>
         </div>
-      </div>
+      </details>
     </section>
   </main>
 <h1>BingoBala Nedir?</h1>
@@ -113,7 +120,7 @@
     <li>Pdf üret e tıklayın ve dosyanız yüklensin</li>
   </ul>
     <h2>Yasal Uyarı</h2>
-  <p>Bu oyun herhangi bir kumar unsuru içermez.Tüm içerikler AdSense ve yerel yasalara uygun şekilde düzenlenmiştir.</p>
+  <p>Bu oyun herhangi bir kumar unsuru içermez.</p>
 
   <main class="container">
     <!-- Bilgilendirme Bölümü (SEO uyumlu) -->
@@ -147,7 +154,7 @@
           <ul style="margin:8px 0 0 0; padding:0; list-style:none;">
             <li><a href="https://sonsuzyasam.github.io/" target="_blank" rel="noopener">sonsuzyasam.github.io (Ana Sayfa)</a></li>
             <li><a href="https://sonsuzyasam.github.io/taksi-hesaplama/" target="_blank" rel="noopener">Taksi Hesaplama</a></li>
-            <!-- Diğer uygulama linklerini buraya ekleyebilirsiniz -->
+            <li><a href="https://sonsuzyasam.github.io/Word-BingoBala/" target="_blank" rel="noopener">Word BingoBala</a></li>
           </ul>
         </nav>
         <h2>Özellikler</h2>
@@ -189,6 +196,8 @@
       <small>© BingoBala — Offline çalışır, veri toplamaz.<br>
         <a href="https://sonsuzyasam.github.io/" target="_blank" rel="noopener">Ana Sayfa</a> |
         <a href="https://sonsuzyasam.github.io/taksi-hesaplama/" target="_blank" rel="noopener">Taksi Hesaplama</a>
+        <a href="https://sonsuzyasam.github.io/Word-BingoBala/" target="_blank" rel="noopener">Word BingoBala</a>
+
       </small>
     
     <!-- Google AdSense Reklamı -->

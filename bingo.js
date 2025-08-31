@@ -395,9 +395,40 @@
 
     /* ===== UI bağlama & başlangıç ===== */
     document.getElementById('btn-call').addEventListener('click',callNumber);
-  document.getElementById('btn-reset').addEventListener('click',()=>{ called=[]; lastEl.textContent='–'; renderLists(); });
-  document.getElementById('btn-pdf').addEventListener('click',generatePdf);
+    document.getElementById('btn-reset').addEventListener('click',()=>{ called=[]; lastEl.textContent='–'; renderLists(); stopAutoCall(); });
+    document.getElementById('btn-pdf').addEventListener('click',generatePdf);
 
-  refreshSourceUi(); setBandsInfo(); buildBoard(); loadPreset('valentine'); resetCaller();
+    // Otomatik numara çekme
+    let autoCallTimer = null;
+    function startAutoCall(intervalSec) {
+      stopAutoCall();
+      if (intervalSec > 0) {
+        autoCallTimer = setInterval(() => {
+          if (called.length < 90) {
+            callNumber();
+          } else {
+            stopAutoCall();
+          }
+        }, intervalSec * 1000);
+      }
+    }
+    function stopAutoCall() {
+      if (autoCallTimer) {
+        clearInterval(autoCallTimer);
+        autoCallTimer = null;
+      }
+      document.getElementById('auto-call-select').value = "0";
+    }
+    document.getElementById('auto-call-select').addEventListener('change', function(e) {
+      const sec = parseInt(e.target.value, 10);
+      if (sec > 0) {
+        startAutoCall(sec);
+      } else {
+        stopAutoCall();
+      }
+    });
+    document.getElementById('btn-auto-call-stop').addEventListener('click', stopAutoCall);
+
+    refreshSourceUi(); setBandsInfo(); buildBoard(); loadPreset('valentine'); resetCaller();
   }
 })();
