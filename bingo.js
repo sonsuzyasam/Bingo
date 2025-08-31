@@ -1,7 +1,7 @@
 'use strict';
 
 (function(){
-  const cm = v => v * 28.3464567; // cm → pt
+  const cm = v => v * 28.3464567; 
 
   // PDF fontları
   let FONT_TEXT = 'helvetica';
@@ -147,7 +147,6 @@
     }
     function generateStripWithRetry(max=400){ for(let i=0;i<max;i++){ const g=generateStrip(); if(g) return g; } throw new Error('Geçerli strip üretilemedi.'); }
 
-    /* ===== Çekiliş Listesi (tek pano) & Kayıt ===== */
     const board = document.getElementById('board-90');
     const gridDrawn = document.getElementById('drawn-grid');
     const lastEl = document.getElementById('last-number');
@@ -159,7 +158,7 @@
       board.innerHTML='';
       for(let r=0;r<6;r++){
         for(let c=0;c<15;c++){
-          const n = r*15 + c + 1; // 1–15, 16–30, ... 76–90
+          const n = r*15 + c + 1; 
           const d = document.createElement('div');
           d.className='cell';
           d.dataset.n = n;
@@ -169,22 +168,19 @@
       }
     }
     function markBoard(){
-      // Her çekilen sayı işaretlensin
       document.querySelectorAll('#board-90 .cell').forEach(el=>{
         el.classList.toggle('mark', called.includes(+el.dataset.n));
       });
     }
     function renderLists(){
-      // Çıkan: çekiliş SIRASIYLA (sıralama YOK)
       gridDrawn.innerHTML='';
-      for(const n of called){
+      for(const n of [...called].reverse()){
         const s=document.createElement('span'); s.className='pill'; s.textContent=n;
         gridDrawn.appendChild(s);
       }
       markBoard();
     }
 
-    /* ===== Caller (TTS) – kadın sesi öncelikli ===== */
     function pickLang(){
       const sel=document.getElementById('opt-lang').value;
       if(sel!=='auto') return sel;
@@ -218,7 +214,6 @@
       speechSynthesis.cancel(); speechSynthesis.speak(u);
     }
     function voicesReady(cb){ if(speechSynthesis.getVoices().length) cb(); else speechSynthesis.onvoiceschanged = cb; }
-    // TTS butonunu sesler hazır olunca aktif et
     voicesReady(function(){
       document.getElementById('btn-call').disabled = false;
     });
@@ -228,13 +223,12 @@
     function callNumber(){
       if(called.length===90) return;
       let n; do{ n=(Math.random()*90|0)+1; }while(called.includes(n));
-      called.push(n);             // sırayı KORU
+      called.push(n);             
       lastEl.textContent=n;
       renderLists();
       speakNumber(n);
     }
 
-    /* ===== Band metni: JSON / preset / özel ===== */
     let bandTexts=['BINGO'], bandIndex=0;
     const srcLocal   = document.getElementById('src-local');
     const srcPreset  = document.getElementById('src-preset');
@@ -279,7 +273,6 @@
       return list.length ? list[bandIndex++ % list.length] : 'BINGO';
     };
 
-    /* ===== PDF oluşturma ===== */
     function getOpts(){
       return {
         bandColor: document.getElementById('opt-band-color').value || '#ff7a00',
@@ -290,7 +283,6 @@
       };
     }
 
-    // Kart çizimi: band üstte, band üstünde kesik çizgi, seri band içinde (6pt bold)
     function drawTicket(
       doc, x, y, w, h, grid, serial,
       bandColor, bandText, bandTextColor
@@ -331,16 +323,15 @@
   
   const serialStr = String(serial).padStart(5,'0');
   doc.setFont(FONT_NUM,'bold'); doc.setFontSize(6); doc.setTextColor(255,255,255);
-  const serialY = bandTop + BAND_H - 2; // alt kenara yakın
+  const serialY = bandTop + BAND_H - 2; 
   doc.text(serialStr, x+w/2, serialY, {align:'center', baseline:'bottom'});
 
-  // Kesik çizgi (bandın ÜSTÜNDE, kalın)
   const dashedY = Math.max(bandTop-1, 0);
   doc.setLineDash([4,2],0); doc.setDrawColor(0);
-  doc.setLineWidth(1.4); // Kalınlık artırıldı
+  doc.setLineWidth(1.4); 
   doc.line(x, dashedY, x+w, dashedY);
   doc.setLineDash();
-  doc.setLineWidth(0.2); // Sonra eski kalınlığa dön
+  doc.setLineWidth(0.2); 
     }
 
     async function generatePdf(){
@@ -357,7 +348,6 @@
       const MARGIN_LR = (pageW - totalW)/2;
       const availH = pageH - MARGIN_T - MARGIN_B;
       const ticketH = availH / CARDS_PER_STRIP;
-      // Sayfa üstüne ve altına site adresi ekle
       function drawHeaderFooter() {
         doc.setFontSize(10);
         doc.setTextColor(80,80,80);
@@ -372,7 +362,7 @@
 
       const drawStrip = (x0, tickets) =>{
         for (let i=0; i<CARDS_PER_STRIP; i++){
-          const yTop = pageH - MARGIN_B - i*ticketH;  // i=0 en alt, i=5 en üst
+          const yTop = pageH - MARGIN_B - i*ticketH;  
           const y    = yTop - ticketH;
           drawTicket(doc, x0, y, STRIP_W, ticketH, tickets[i], serial,
             o.bandColor, nextBand(), o.bandTextColor
@@ -393,16 +383,16 @@
       doc.save(pdfName);
     }
 
-    /* ===== UI bağlama & başlangıç ===== */
     document.getElementById('btn-call').addEventListener('click',callNumber);
     document.getElementById('btn-reset').addEventListener('click',()=>{ called=[]; lastEl.textContent='–'; renderLists(); stopAutoCall(); });
     document.getElementById('btn-pdf').addEventListener('click',generatePdf);
 
-    // Otomatik numara çekme
     let autoCallTimer = null;
+  let lastAutoCallInterval = 0;
     function startAutoCall(intervalSec) {
-      stopAutoCall();
+      stopAutoCall(false);
       if (intervalSec > 0) {
+        lastAutoCallInterval = intervalSec;
         autoCallTimer = setInterval(() => {
           if (called.length < 90) {
             callNumber();
@@ -410,14 +400,15 @@
             stopAutoCall();
           }
         }, intervalSec * 1000);
+        document.getElementById('btn-auto-call-stop').textContent = 'Durdur';
       }
     }
     function stopAutoCall() {
       if (autoCallTimer) {
         clearInterval(autoCallTimer);
         autoCallTimer = null;
+        document.getElementById('btn-auto-call-stop').textContent = 'Devam';
       }
-      document.getElementById('auto-call-select').value = "0";
     }
     document.getElementById('auto-call-select').addEventListener('change', function(e) {
       const sec = parseInt(e.target.value, 10);
@@ -427,7 +418,13 @@
         stopAutoCall();
       }
     });
-    document.getElementById('btn-auto-call-stop').addEventListener('click', stopAutoCall);
+    document.getElementById('btn-auto-call-stop').addEventListener('click', function(){
+      if (!autoCallTimer && lastAutoCallInterval > 0) {
+        startAutoCall(lastAutoCallInterval);
+      } else {
+        stopAutoCall();
+      }
+    });
 
     refreshSourceUi(); setBandsInfo(); buildBoard(); loadPreset('valentine'); resetCaller();
   }

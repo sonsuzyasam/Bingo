@@ -1,7 +1,6 @@
 <!doctype html>
 <html lang="tr">
 <head>
-  <!-- SEO Meta Etiketleri -->
   <meta name="description" content="BingoBala ile dijital bingo çekilişi, sesli numara okuma, PDF kart üretimi ve offline güvenli kullanım. Okullar, aileler ve etkinlikler için ideal!" />
   <meta name="keywords" content="bingo, çekiliş, dijital bingo, pdf bingo kartı, sesli bingo, offline bingo, okul çekilişi, aile oyunu, etkinlik aracı, tombala" />
   <meta name="robots" content="index, follow" />
@@ -20,7 +19,7 @@
 <body>
   
   <header class="topbar">
-    <h1>90-Ball Bingo</h1>
+    <h1>BİNGOBALA "İster Tombala de İster Bingo"</h1>
       <div class="actions">
   <button id="btn-call" class="btn" style="font-size:24pt;">Numara Çek (TTS)</button>
       </div>
@@ -36,11 +35,13 @@
       </div>
   </header>
 
-    <!-- SAĞ: Çıkan Sayılar (En üstte) -->
     <section class="panel" id="caller" style="display:flex; gap:32px; align-items:flex-start;">
       <div style="min-width:120px;">
         <h3>Çekiliş</h3>
         <div id="last-number" class="last-number">–</div>
+          <div style="margin:12px 0; text-align:left;">
+            <button id="btn-reset" class="btn btn-ghost" style="font-size:24pt;">Sıfırla</button>
+          </div>
       </div>
       <div class="list-block" style="flex:1;">
         <div class="list-head">Çıkan Sayılar</div>
@@ -48,15 +49,10 @@
       </div>
     </section>
 
-    <!-- SOL: Ayarlar + Çekiliş Listesi (Artık altta) -->
     <section class="panel">
-      <!-- Tek blok: 6 satır × 15 sütun (1–15, 16–30, …, 76–90) -->
       <div class="list-block">
-        <div class="list-head">Çekiliş Listesi</div>
-          <div style="margin-bottom:12px; text-align:left;">
-            <button id="btn-reset" class="btn btn-ghost" style="font-size:24pt;">Sıfırla</button>
-          </div>
-        <div id="board-90" class="board90"></div>
+  <div class="list-head">Çekiliş Listesi</div>
+  <div id="board-90" class="board90"></div>
       </div>
   <details open style="margin-top:24px;">
         <summary>Ayarlar</summary>
@@ -123,7 +119,6 @@
   <p>Bu oyun herhangi bir kumar unsuru içermez.</p>
 
   <main class="container">
-    <!-- Bilgilendirme Bölümü (SEO uyumlu) -->
     <section class="info-panel" style="margin-bottom:24px; background:#fffbe7; border-radius:8px; padding:20px; box-shadow:0 2px 8px #0001;">
       <div style="margin:32px 0; text-align:left; background:#f8f8ff; border-radius:8px; padding:18px; box-shadow:0 1px 4px #0001;">
         <h2>Kullanım Talimatları & Oyun Kuralları</h2>
@@ -200,7 +195,6 @@
 
       </small>
     
-    <!-- Google AdSense Reklamı -->
     <div style="margin-top:16px; text-align:center;">
       <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7309845525285029"
         crossorigin="anonymous"></script>
