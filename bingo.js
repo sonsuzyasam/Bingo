@@ -207,8 +207,8 @@
     function speakNumber(n){
       if(!('speechSynthesis' in window)) return;
       const u=new SpeechSynthesisUtterance(), lang=pickLang(); u.lang=lang;
-      const map={ 'tr-TR':x=>`${x}`,'en-US':x=>`Number ${x}`,'hi-IN':x=>`संख्या ${x}`,'de-DE':x=>`Zahl ${x}`,'fr-FR':x=>`Numéro ${x}` };
-      u.text=(map[lang]||map['en-US'])(n);
+      const map={ 'tr-TR':x=>`${x}`,'en-GB':x=>`${x}`,'hi-IN':x=>`${x}`,'de-DE':x=>`${x}`,'fr-FR':x=>`${x}` };
+      u.text=(map[lang]||map['en-GB'])(n);
       const v = pickVoiceFor(lang);
       if(v) u.voice=v;
       speechSynthesis.cancel(); speechSynthesis.speak(u);
@@ -275,8 +275,8 @@
 
     function getOpts(){
       return {
-        bandColor: document.getElementById('opt-band-color').value || '#ff7a00',
-        bandTextColor: document.getElementById('opt-band-text-color').value || '#000000',
+        bandColor: document.getElementById('opt-band-color').value || '#f34f0eff',
+        bandTextColor: document.getElementById('opt-band-text-color').value || '#f7f0f0ff',
         serialStart: parseInt(document.getElementById('opt-serial-start').value||'1',10),
         pages: Math.max(1, parseInt(document.getElementById('opt-pages').value||'1',10)),
         baseName: (document.getElementById('opt-basename').value||'bingo_').trim()
