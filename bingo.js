@@ -178,6 +178,11 @@
         const s=document.createElement('span'); s.className='pill'; s.textContent=n;
         gridDrawn.appendChild(s);
       }
+      // Kalan numara sayısını Çekiliş Listesi altında göster
+      const remEl = document.getElementById('remaining-count');
+      if (remEl) {
+        remEl.textContent = `Kalan Numara Sayısı: ${90 - called.length}`;
+      }
       markBoard();
     }
 
