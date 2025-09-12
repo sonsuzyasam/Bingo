@@ -353,11 +353,11 @@
       const MARGIN_LR = (pageW - totalW)/2;
       const availH = pageH - MARGIN_T - MARGIN_B;
       const ticketH = availH / CARDS_PER_STRIP;
-      function drawHeaderFooter() {
+      function drawHeaderFooter(currentPageNum, totalPages) {
         doc.setFontSize(10);
         doc.setTextColor(80,80,80);
-        doc.text('https://sonsuzyasam.github.io/Bingo/', pageW/2, cm(0.5), {align:'center'});
-        doc.text('https://sonsuzyasam.github.io/Bingo/', pageW/2, pageH-cm(0.2), {align:'center'});
+        // Sayfa numarasını üstte URL'nin yanında göster
+        doc.text(`https://sonsuzyasam.github.io/Bingo/   ${currentPageNum}/${totalPages}`, pageW/2, cm(0.5), {align:'center'});
       }
 
       let serial = o.serialStart;
@@ -377,11 +377,30 @@
       };
 
       for(let p=0; p<o.pages; p++){
-  drawHeaderFooter();
+  // Sayfa numarası için değişkenler
+  const currentPageNum = p+1;
+  const totalPages = o.pages;
+  drawHeaderFooter(currentPageNum, totalPages);
+  // Sol taraf seri: 0001'den başlar, 10 sayfa ise 0060'da biter
+  // Sağ taraf seri: solun bittiği yerden başlar, 10 sayfa ise 0061-0120
+  let leftSerial = o.serialStart + p*CARDS_PER_STRIP;
+  let rightSerial = o.serialStart + o.pages*CARDS_PER_STRIP + p*CARDS_PER_STRIP;
   const left  = generateStripWithRetry();
   const right = generateStripWithRetry();
-  drawStrip(MARGIN_LR, left);
-  drawStrip(MARGIN_LR + STRIP_W + CENTER_GUTTER, right);
+  for (let i=0; i<CARDS_PER_STRIP; i++) {
+    // Sol
+    const yTop = pageH - MARGIN_B - i*ticketH;
+    const y    = yTop - ticketH;
+    drawTicket(doc, MARGIN_LR, y, STRIP_W, ticketH, left[i], leftSerial,
+      o.bandColor, nextBand(), o.bandTextColor
+    );
+    leftSerial++;
+    // Sağ
+    drawTicket(doc, MARGIN_LR + STRIP_W + CENTER_GUTTER, y, STRIP_W, ticketH, right[i], rightSerial,
+      o.bandColor, nextBand(), o.bandTextColor
+    );
+    rightSerial++;
+  }
   if(p<o.pages-1) doc.addPage();
       }
 
