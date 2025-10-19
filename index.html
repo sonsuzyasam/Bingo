@@ -123,7 +123,7 @@
     <section class="info-panel" style="margin-bottom:24px; background:#fffbe7; border-radius:8px; padding:20px; box-shadow:0 2px 8px #0001;">
       <div style="margin:24px 0; text-align:center;">
         <h2>BingoBala QR Kodu</h2>
-        <img src="assets/bingo_qr.png" alt="BingoBala QR Kodu" style="max-width:180px; margin:8px; border-radius:8px; box-shadow:0 2px 8px #0002;">
+        <div id="qr-code" style="display:inline-block; padding:8px; background:#fff; border-radius:8px; box-shadow:0 2px 8px #0002;"></div>
         <div style="font-size:0.95em; color:#555; margin-top:8px;">Uygulamayı hızlıca açmak için QR kodu okutun.</div>
       </div>
       <div style="margin:32px 0; text-align:left; background:#f8f8ff; border-radius:8px; padding:18px; box-shadow:0 1px 4px #0001;">
@@ -215,7 +215,24 @@
   </footer>
 
   <script defer src="./bingo.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs2@0.0.2/qrcode.min.js"></script>
+  <script>
+    (function(){
+      function initQR(){
+        var el = document.getElementById('qr-code');
+        if(!el || el.childNodes.length) return;
+        try{
+          new QRCode(el, {
+            text: 'https://sonsuzyasam.github.io/Bingo/',
+            width: 180,
+            height: 180,
+            correctLevel: QRCode.CorrectLevel.M
+          });
+        }catch(_){/* ignore */}
+      }
+      if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', initQR); else initQR();
+    })();
+  </script>
 </body>
 </html>
 

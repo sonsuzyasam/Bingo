@@ -326,7 +326,7 @@
   doc.text(fit.text, x+w/2, bandTextY, {align:'center', baseline:'middle'});
 
   
-  const serialStr = String(serial).padStart(5,'0');
+  const serialStr = String(serial).padStart(4,'0');
   doc.setFont(FONT_NUM,'bold'); doc.setFontSize(6); doc.setTextColor(255,255,255);
   const serialY = bandTop + BAND_H - 2; 
   doc.text(serialStr, x+w/2, serialY, {align:'center', baseline:'bottom'});
@@ -356,8 +356,10 @@
       function drawHeaderFooter(currentPageNum, totalPages) {
         doc.setFontSize(10);
         doc.setTextColor(80,80,80);
-        // Sayfa numarasını üstte URL'nin yanında göster
-        doc.text(`https://sonsuzyasam.github.io/Bingo/   ${currentPageNum}/${totalPages}`, pageW/2, cm(0.5), {align:'center'});
+        // Üstte yalnızca URL
+        doc.text(`https://sonsuzyasam.github.io/Bingo/`, pageW/2, cm(0.5), {align:'center'});
+        // Altta sayfa numarası (ör. 1/10)
+        doc.text(`${currentPageNum}/${totalPages}`, pageW/2, pageH - cm(0.5), {align:'center'});
       }
 
       let serial = o.serialStart;
