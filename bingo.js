@@ -194,6 +194,7 @@
       if(nav.startsWith('hi')) return 'hi-IN';
       if(nav.startsWith('de')) return 'de-DE';
       if(nav.startsWith('fr')) return 'fr-FR';
+      if(nav.startsWith('da')) return 'da-DK';
       return 'en-US';
     }
     function pickVoiceFor(lang){
@@ -212,7 +213,7 @@
     function speakNumber(n){
       if(!('speechSynthesis' in window)) return;
       const u=new SpeechSynthesisUtterance(), lang=pickLang(); u.lang=lang;
-      const map={ 'tr-TR':x=>`${x}`,'en-GB':x=>`${x}`,'hi-IN':x=>`${x}`,'de-DE':x=>`${x}`,'fr-FR':x=>`${x}` };
+      const map={ 'tr-TR':x=>`${x}`,'en-GB':x=>`${x}`,'hi-IN':x=>`${x}`,'de-DE':x=>`${x}`,'fr-FR':x=>`${x}`,'da-DK':x=>`${x}` };
       u.text=(map[lang]||map['en-GB'])(n);
       const v = pickVoiceFor(lang);
       if(v) u.voice=v;
