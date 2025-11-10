@@ -59,37 +59,6 @@
         <summary>Ayarlar</summary>
 
         <div class="row">
-          <label class="label">Yazı Kaynağı</label>
-          <div class="field">
-            <label><input type="radio" name="src" id="src-local"> Yerel JSON</label>
-            <input type="file" id="local-file" accept=".json" disabled />
-            <label><input type="radio" name="src" id="src-preset" checked> Hazır Preset</label>
-            <select id="preset-select">
-              <option value="valentine">Valentine (romantik)</option>
-            </select>
-            <label><input type="radio" name="src" id="src-custom"> Özel Metin</label>
-            <input type="text" id="custom-text" placeholder="Örn: OKUL ÇEKİLİŞİ" disabled />
-            <span id="bands-info" class="hint">—</span>
-          </div>
-        </div>
-
-        <div class="row">
-          <label class="label">Band Rengi</label>
-          <input type="color" id="opt-band-color" value="#ff7a00" />
-          <label class="label">Yazı Rengi</label>
-          <input type="color" id="opt-band-text-color" value="#000000" />
-        </div>
-
-        <div class="row">
-          <label class="label">Seri No:</label>
-          <input type="number" id="opt-serial-start" value="1" min="1" />
-          <label class="label">Sayfa Sayısı</label>
-          <input type="number" id="opt-pages" value="1" min="1" />
-          <label class="label">Dosya Adı</label>
-          <input type="text" id="opt-basename" value="bingo_" />
-        </div>
-
-        <div class="row">
           <label class="label">Dil (TTS)</label>
           <select id="opt-lang">
             <option value="auto" selected>Otomatik (sistem)</option>
@@ -101,8 +70,14 @@
             <option value="da-DK">Dansk</option>
           </select>
         </div>
-        <div style="margin-top:18px; text-align:left;">
-          <button id="btn-pdf" class="btn btn-primary" style="font-size:24pt;">PDF Üret</button>
+        
+        <div style="margin-top:18px; text-align:center;">
+          <a href="pdf-generator.html" target="_blank" class="btn btn-primary" style="font-size:20pt; display:inline-block; text-decoration:none; color:white;">
+            📄 PDF Kart Üretici
+          </a>
+          <div style="font-size:13px; color:#666; margin-top:8px;">
+            Yeni sekmede mobil uyumlu PDF kartları üretin
+          </div>
         </div>
       </details>
     </section>

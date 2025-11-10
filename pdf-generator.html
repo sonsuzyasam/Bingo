@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta name="description" content="BingoBala PDF Kart Üretici - Mobil uyumlu bingo kartları oluşturun" />
+  <meta name="keywords" content="bingo kartı, pdf üret, mobil bingo, tombala kartı" />
+  <meta name="robots" content="index, follow" />
+  <meta property="og:title" content="BingoBala PDF Kart Üretici" />
+  <meta property="og:description" content="Mobil uyumlu bingo kartları PDF olarak üretin" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>BingoBala - PDF Kart Üretici</title>
+  <link rel="stylesheet" href="./style.css" />
+  <style>
+    /* Mobile-first optimized styles */
+    .pdf-generator {
+      max-width: 100%;
+      padding: 16px;
+      margin: 0 auto;
+    }
+    
+    .mobile-form {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    
+    .form-group {
+      background: #f9f9f9;
+      padding: 16px;
+      border-radius: 8px;
+      border: 1px solid #e0e0e0;
+    }
+    
+    .form-group label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 8px;
+      font-size: 1.1em;
+    }
+    
+    .form-group input, .form-group select {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px; /* Prevents zoom on iOS */
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      box-sizing: border-box;
+    }
+    
+    .color-input-group {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .color-input-group > div {
+      flex: 1;
+    }
+    
+    .btn-generate {
+      background: #ff7a00;
+      color: white;
+      padding: 16px 24px;
+      font-size: 18px;
+      font-weight: 600;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 20px;
+    }
+    
+    .btn-generate:hover {
+      background: #e06900;
+    }
+    
+    .btn-generate:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+    
+    .back-link {
+      display: inline-block;
+      margin-bottom: 20px;
+      color: #666;
+      text-decoration: none;
+      font-size: 14px;
+    }
+    
+    .back-link:hover {
+      color: #333;
+    }
+    
+    .preview-info {
+      background: #e8f4f8;
+      padding: 16px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      font-size: 14px;
+      color: #444;
+    }
+    
+    .loading {
+      text-align: center;
+      padding: 20px;
+      color: #666;
+    }
+    
+    @media (min-width: 768px) {
+      .pdf-generator {
+        max-width: 600px;
+      }
+      
+      .color-input-group {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="pdf-generator">
+    <a href="index.html" class="back-link">← Ana Sayfaya Dön</a>
+    
+    <h1>BingoBala PDF Kart Üretici</h1>
+    
+    <div class="preview-info">
+      <strong>📱 Mobil Uyumlu:</strong> Bu sayfa mobil cihazlarda sorunsuz çalışır. 
+      PDF üretimi tarayıcınızda yapılır, internet bağlantısı gerekmez.
+    </div>
+    
+    <div id="country-info" style="background:#fff3cd; padding:12px; border-radius:6px; margin-bottom:16px; font-size:14px; display:none;">
+      <strong>🌍 Otomatik Tespit:</strong> <span id="detected-country">--</span> ülkesi tespit edildi.
+    </div>
+    
+    <form class="mobile-form">
+      <div class="form-group">
+        <label>Yazı Kaynağı</label>
+        <div style="margin-bottom:12px;">
+          <label style="font-weight:normal; margin-bottom:4px;">
+            <input type="radio" name="src" id="src-preset" checked style="width:auto; margin-right:8px;">
+            Hazır Preset
+          </label>
+          <select id="preset-select" style="margin-top:8px;">
+            <option value="valentine">Valentine (Romantik)</option>
+            <option value="general" data-country="TR">Genel Türkçe</option>
+            <option value="school" data-country="TR">Okul Çekilişi</option>
+            <option value="english" data-country="US">English Bingo</option>
+            <option value="danish" data-country="DK">Dansk Bingo</option>
+          </select>
+        </div>
+        
+        <div>
+          <label style="font-weight:normal; margin-bottom:4px;">
+            <input type="radio" name="src" id="src-custom" style="width:auto; margin-right:8px;">
+            Özel Metin
+          </label>
+          <input type="text" id="custom-text" placeholder="Örn: OKUL ÇEKİLİŞİ" disabled style="margin-top:8px;" />
+        </div>
+        
+        <div style="margin-top:8px; font-size:13px; color:#666;" id="bands-info">
+          — preset yükleniyor —
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <div class="color-input-group">
+          <div>
+            <label>Band Rengi</label>
+            <input type="color" id="opt-band-color" value="#ff7a00" />
+          </div>
+          <div>
+            <label>Yazı Rengi</label>
+            <input type="color" id="opt-band-text-color" value="#000000" />
+          </div>
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label>Seri No Başlangıç</label>
+        <input type="number" id="opt-serial-start" value="1" min="1" />
+      </div>
+      
+      <div class="form-group">
+        <label>Sayfa Sayısı</label>
+        <input type="number" id="opt-pages" value="1" min="1" max="50" />
+        <div style="font-size:13px; color:#666; margin-top:4px;">
+          Her sayfa 12 kart içerir (2 kolon × 6 kart)
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label>Dosya Adı</label>
+        <input type="text" id="opt-basename" value="bingo_" placeholder="Örn: okul_cekilis_" />
+      </div>
+    </form>
+    
+    <button type="button" class="btn-generate" id="btn-pdf">
+      📄 PDF Kartları Üret
+    </button>
+    
+    <div id="loading" class="loading" style="display:none;">
+      <div>PDF üretiliyor...</div>
+      <div style="font-size:12px; margin-top:8px;">Lütfen bekleyin, işlem tamamlanıyor.</div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+  <script src="./pdf-generator.js"></script>
+</body>
+</html>
