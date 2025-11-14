@@ -5,6 +5,8 @@
   const board = document.getElementById('board-90');
   const gridDrawn = document.getElementById('drawn-grid');
   const lastEl = document.getElementById('last-number');
+  const lastModal = document.getElementById('last-modal');
+  const lastModalValue = document.getElementById('last-modal-value');
   const drawnModal = document.getElementById('drawn-modal');
   const boardModal = document.getElementById('board-modal');
   const autoIndicatorEl = document.getElementById('auto-indicator');
@@ -60,7 +62,11 @@
     const autoSelect = document.getElementById('auto-call-select');
     const autoStop = document.getElementById('btn-auto-call-stop');
     const btnRestore = document.getElementById('btn-restore-game');
-    const btnOpenDrawn = document.getElementById('btn-open-drawn');
+  const btnOpenLast = document.getElementById('btn-open-last');
+  const btnCloseLast = document.getElementById('btn-close-last');
+  const btnLastOpenDrawn = document.getElementById('btn-last-open-drawn');
+  const btnLastOpenBoard = document.getElementById('btn-last-open-board');
+  const btnOpenDrawn = document.getElementById('btn-open-drawn');
     const btnCloseDrawn = document.getElementById('btn-close-drawn');
     const btnOpenBoard = document.getElementById('btn-open-board');
     const btnCloseBoard = document.getElementById('btn-close-board');
@@ -71,7 +77,11 @@
       autoSelect: !!autoSelect,
     autoStop: !!autoStop,
     btnRestore: !!btnRestore,
-    btnOpenDrawn: !!btnOpenDrawn,
+  btnOpenLast: !!btnOpenLast,
+  btnCloseLast: !!btnCloseLast,
+  btnLastOpenDrawn: !!btnLastOpenDrawn,
+  btnLastOpenBoard: !!btnLastOpenBoard,
+  btnOpenDrawn: !!btnOpenDrawn,
     btnCloseDrawn: !!btnCloseDrawn,
     btnOpenBoard: !!btnOpenBoard,
     btnCloseBoard: !!btnCloseBoard,
@@ -110,6 +120,24 @@
       }
     });
 
+    if(btnOpenLast) btnOpenLast.addEventListener('click', () => {
+      const latest = called.length ? called[called.length - 1] : null;
+      updateLastNumberDisplay(latest);
+      openModal(lastModal);
+    });
+    if(btnCloseLast) btnCloseLast.addEventListener('click', () => closeModal(lastModal));
+    if(lastModal) lastModal.addEventListener('click', function(evt){
+      if(evt.target === lastModal) closeModal(lastModal);
+    });
+    if(btnLastOpenDrawn) btnLastOpenDrawn.addEventListener('click', () => {
+      closeModal(lastModal);
+      openModal(drawnModal);
+    });
+    if(btnLastOpenBoard) btnLastOpenBoard.addEventListener('click', () => {
+      closeModal(lastModal);
+      openModal(boardModal);
+    });
+
     if(btnOpenDrawn) btnOpenDrawn.addEventListener('click', () => openModal(drawnModal));
     if(btnCloseDrawn) btnCloseDrawn.addEventListener('click', () => closeModal(drawnModal));
     if(drawnModal) drawnModal.addEventListener('click', function(evt){
@@ -124,6 +152,7 @@
 
     document.addEventListener('keydown', function(evt){
       if(evt.key === 'Escape') {
+        closeModal(lastModal);
         closeModal(drawnModal);
         closeModal(boardModal);
       }
@@ -217,7 +246,7 @@
       called = [...state.called];
       lastAutoCallInterval = typeof state.lastAutoCallInterval === 'number' ? state.lastAutoCallInterval : 0;
       const lastNumber = state.lastNumber != null ? state.lastNumber : (called.length ? called[called.length - 1] : null);
-      lastEl.textContent = lastNumber != null ? lastNumber : '–';
+    updateLastNumberDisplay(lastNumber);
       renderLists();
   if(called.length) highlightLatestPill();
       stopAutoCall(true, true);
@@ -246,7 +275,7 @@
       called = [...state.called];
       lastAutoCallInterval = typeof state.lastAutoCallInterval === 'number' ? state.lastAutoCallInterval : 0;
       const lastNumber = state.lastNumber != null ? state.lastNumber : called[called.length - 1];
-      lastEl.textContent = lastNumber != null ? lastNumber : '–';
+    updateLastNumberDisplay(lastNumber);
       renderLists();
   if(called.length) highlightLatestPill();
       stopAutoCall(true, true);
@@ -287,9 +316,26 @@
     }
   }
 
+  function updateLastNumberDisplay(value, options = {}){
+    const { flash = false } = options;
+    const text = value != null ? value : '–';
+    const targets = [lastEl, lastModalValue];
+    targets.forEach(el => {
+      if(!el) return;
+      el.textContent = text;
+      if(flash) {
+        el.classList.remove('flash');
+        void el.offsetWidth;
+        el.classList.add('flash');
+      } else {
+        el.classList.remove('flash');
+      }
+    });
+  }
+
   function openModal(modal){
     if(!modal) return;
-    [drawnModal, boardModal].forEach(m => {
+    [lastModal, drawnModal, boardModal].forEach(m => {
       if(m && m !== modal) closeModal(m);
     });
     renderLists();
@@ -474,8 +520,7 @@
     const { skipBackup = false, skipSave = false } = options;
     if(!skipBackup) backupState();
     called = [];
-    lastEl.textContent = '–';
-  lastEl.classList.remove('flash');
+    updateLastNumberDisplay(null);
     isReading = false;
     pausedForTTS = false;
     renderLists();
@@ -494,10 +539,7 @@
     do{ n=(Math.random()*90|0)+1; }while(called.includes(n));
     called.push(n);
     console.log(`✨ Çekilen numara: ${n}`);
-    lastEl.textContent=n;
-    lastEl.classList.remove('flash');
-    void lastEl.offsetWidth;
-    lastEl.classList.add('flash');
+  updateLastNumberDisplay(n, { flash: true });
     renderLists();
     highlightLatestPill();
     saveState();
