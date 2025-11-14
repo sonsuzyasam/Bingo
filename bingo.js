@@ -183,7 +183,12 @@
       }
     });
 
-    attachTouchFriendly(btnOpenLast, openLastHandler);
+    if(btnOpenLast){
+      btnOpenLast.addEventListener('click', openLastHandler);
+      btnOpenLast.addEventListener('touchend', function(evt){
+        openLastHandler(evt);
+      }, { passive: false });
+    }
     attachTouchFriendly(btnMobileOpenLast, openLastHandler);
     if(btnCloseLast) btnCloseLast.addEventListener('click', () => closeModal(lastModal));
     if(lastModal){
