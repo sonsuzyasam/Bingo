@@ -21,17 +21,21 @@
   <header class="topbar">
     <h1>BİNGOBALA "İster Tombala de İster Bingo"</h1>
       <div class="actions">
-  <button id="btn-call" class="btn" style="font-size:24pt;">Numara Çek</button>
+        <button id="btn-call" class="btn btn-large">🎲 <span>Numara Çek</span></button>
+        <button id="btn-open-drawn" class="btn btn-ghost">📋 <span>Çekilen Sayılar</span></button>
+        <button id="btn-open-board" class="btn btn-ghost">📊 <span>1-90 Tablosu</span></button>
+        <button id="btn-restore-game" class="btn btn-ghost" style="display:none;">⏪ <span>Oyunu Geri Yükle</span></button>
       </div>
       <div style="margin-top:16px; text-align:left;">
-        <label for="auto-call-select" style="font-size:1.1em; font-weight:500;">Otomatik Numara Çek:</label>
-        <select id="auto-call-select" style="font-size:18pt; margin-left:8px;">
+        <label for="auto-call-select" class="label-inline">⚙️ Otomatik Numara Çek:</label>
+        <select id="auto-call-select" class="control-inline">
           <option value="0">Kapalı</option>
           <option value="3">3 saniye</option>
           <option value="5">5 saniye</option>
           <option value="10">10 saniye</option>
         </select>
-        <button id="btn-auto-call-stop" class="btn btn-ghost" style="margin-left:8px; font-size:1em;">Durdur</button>
+  <button id="btn-auto-call-stop" class="btn btn-ghost control-inline">⏯️ <span>Devam</span></button>
+        <span id="auto-indicator" class="auto-indicator" aria-live="polite">Manuel</span>
       </div>
   </header>
 
@@ -40,20 +44,20 @@
         <h3>Çekiliş</h3>
         <div id="last-number" class="last-number">–</div>
           <div style="margin:12px 0; text-align:left;">
-            <button id="btn-reset" class="btn btn-ghost" style="font-size:24pt;">Sıfırla</button>
+            <button id="btn-reset" class="btn btn-ghost">♻️ <span>Sıfırla</span></button>
           </div>
       </div>
       <div class="list-block" style="flex:1;">
         <div class="list-head">Çıkan Sayılar</div>
-        <div id="drawn-grid" class="box-grid"></div>
+        <p class="list-info">Detaylı listeyi görmek için "Çekilen Sayılar" butonuna tıklayın.</p>
       </div>
     </section>
 
     <section class="panel">
       <div class="list-block">
-  <div id="remaining-count" style="margin:8px 0 12px 0; font-size:1.1em; color:#ff7a00; font-weight:600;"></div>
-  <div class="list-head">Çekiliş Listesi (ÇIKAN SAYILARIN DEVAMINI GÖRMEK İÇİN KAYDIRIN)</div>
-  <div id="board-90" class="board90"></div>
+        <div id="remaining-count" style="margin:8px 0 12px 0; font-size:1.1em; color:#ff7a00; font-weight:600;"></div>
+        <div class="list-head">Çekiliş Özeti</div>
+        <p class="list-info">Çekilen sayıları görmek için "Çekilen Sayılar", tabloyu görmek için "1-90 Tablosu" butonuna dokunun.</p>
       </div>
   <details open style="margin-top:24px;">
         <summary>Ayarlar</summary>
@@ -189,6 +193,37 @@
       <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
     </div>
   </footer>
+
+  <div id="drawn-modal" class="modal" aria-hidden="true">
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="drawn-modal-title">
+      <div class="modal-header">
+        <h3 id="drawn-modal-title">Çekilen Sayılar</h3>
+        <button type="button" id="btn-close-drawn" class="modal-close" aria-label="Kapat">&times;</button>
+      </div>
+      <p class="modal-subtitle">En son çekilen sayılar en üstte görünür.</p>
+      <div class="modal-body">
+        <div class="modal-section">
+          <h4 class="modal-section-title">Çekilen Sayı Listesi</h4>
+          <div id="drawn-grid" class="box-grid"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="board-modal" class="modal" aria-hidden="true">
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="board-modal-title">
+      <div class="modal-header">
+        <h3 id="board-modal-title">1-90 Tablosu</h3>
+        <button type="button" id="btn-close-board" class="modal-close" aria-label="Kapat">&times;</button>
+      </div>
+      <p class="modal-subtitle">Çekilen sayılar, tabloda yeşil olarak işaretlenir.</p>
+      <div class="modal-body">
+        <div class="modal-section">
+          <div id="board-90" class="board90"></div>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <script defer src="./bingo.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/qrcodejs2@0.0.2/qrcode.min.js"></script>

@@ -5,6 +5,11 @@
   const board = document.getElementById('board-90');
   const gridDrawn = document.getElementById('drawn-grid');
   const lastEl = document.getElementById('last-number');
+  const drawnModal = document.getElementById('drawn-modal');
+  const boardModal = document.getElementById('board-modal');
+  const autoIndicatorEl = document.getElementById('auto-indicator');
+  const STORAGE_KEY = 'bingoStateV1';
+  const BACKUP_KEY = 'bingoStateBackupV1';
   let called = [];
   let autoCallTimer = null;
   let lastAutoCallInterval = 0;
@@ -17,9 +22,16 @@
   function init(){
     console.log('🚀 BingoBala başlatılıyor...');
     detectCountryAndSetTTS();
-    buildBoard(); 
-    resetCaller();
+    buildBoard();
+    const restored = loadState();
+    if(!restored) {
+      resetCaller({ skipBackup: true, skipSave: true });
+      saveState();
+    }
     setupEventListeners();
+    toggleRestoreButton();
+    setAutoIndicator(!!autoCallTimer);
+    setAutoStopLabel(!!autoCallTimer);
     console.log('✅ BingoBala hazır!');
   }
 
@@ -47,35 +59,253 @@
     const btnReset = document.getElementById('btn-reset'); 
     const autoSelect = document.getElementById('auto-call-select');
     const autoStop = document.getElementById('btn-auto-call-stop');
+    const btnRestore = document.getElementById('btn-restore-game');
+    const btnOpenDrawn = document.getElementById('btn-open-drawn');
+    const btnCloseDrawn = document.getElementById('btn-close-drawn');
+    const btnOpenBoard = document.getElementById('btn-open-board');
+    const btnCloseBoard = document.getElementById('btn-close-board');
     
     console.log('Elements found:', {
       btnCall: !!btnCall,
       btnReset: !!btnReset,
       autoSelect: !!autoSelect,
-      autoStop: !!autoStop,
+    autoStop: !!autoStop,
+    btnRestore: !!btnRestore,
+    btnOpenDrawn: !!btnOpenDrawn,
+    btnCloseDrawn: !!btnCloseDrawn,
+    btnOpenBoard: !!btnOpenBoard,
+    btnCloseBoard: !!btnCloseBoard,
       lastEl: !!lastEl,
       board: !!board,
       gridDrawn: !!gridDrawn
     });
     
     if(btnCall) btnCall.addEventListener('click', callNumber);
-    if(btnReset) btnReset.addEventListener('click', ()=>{ 
-      called=[]; lastEl.textContent='–'; renderLists(); stopAutoCall(); 
-    });
+    if(btnReset) btnReset.addEventListener('click', handleResetClick);
     
     if(autoSelect) autoSelect.addEventListener('change', function(e) {
       const sec = parseInt(e.target.value, 10);
-      if (sec > 0) startAutoCall(sec); else stopAutoCall();
+      if (sec > 0) {
+        startAutoCall(sec);
+      } else {
+        stopAutoCall();
+        saveState();
+      }
     });
     
     if(autoStop) autoStop.addEventListener('click', function(){
-      if (!autoCallTimer && lastAutoCallInterval > 0) {
-        startAutoCall(lastAutoCallInterval);
+      if (!autoCallTimer) {
+        const selectVal = autoSelect ? parseInt(autoSelect.value, 10) : 0;
+        const interval = lastAutoCallInterval || selectVal || 3;
+        startAutoCall(interval);
       } else {
         stopAutoCall();
+        saveState();
       }
     });
-    console.log('✅ Event listener\'lar kuruldu!');
+
+    if(btnRestore) btnRestore.addEventListener('click', function(){
+      if(restoreFromBackup()) {
+        console.log('♻️ Yedekten oyun geri yüklendi.');
+      }
+    });
+
+    if(btnOpenDrawn) btnOpenDrawn.addEventListener('click', () => openModal(drawnModal));
+    if(btnCloseDrawn) btnCloseDrawn.addEventListener('click', () => closeModal(drawnModal));
+    if(drawnModal) drawnModal.addEventListener('click', function(evt){
+      if(evt.target === drawnModal) closeModal(drawnModal);
+    });
+
+    if(btnOpenBoard) btnOpenBoard.addEventListener('click', () => openModal(boardModal));
+    if(btnCloseBoard) btnCloseBoard.addEventListener('click', () => closeModal(boardModal));
+    if(boardModal) boardModal.addEventListener('click', function(evt){
+      if(evt.target === boardModal) closeModal(boardModal);
+    });
+
+    document.addEventListener('keydown', function(evt){
+      if(evt.key === 'Escape') {
+        closeModal(drawnModal);
+        closeModal(boardModal);
+      }
+    });
+
+    window.addEventListener('storage', toggleRestoreButton);
+    console.log("✅ Event listener'lar kuruldu!");
+  }
+
+  function setAutoIndicator(isActive){
+    if(!autoIndicatorEl) return;
+    autoIndicatorEl.textContent = isActive ? 'Otomatik' : 'Manuel';
+    autoIndicatorEl.classList.toggle('active', !!isActive);
+  }
+
+  function highlightLatestPill(){
+    if(!gridDrawn) return;
+    const existing = gridDrawn.querySelectorAll('.pill.is-new');
+    existing.forEach(el => el.classList.remove('is-new'));
+    const first = gridDrawn.querySelector('.pill');
+    if(!first) return;
+    first.classList.add('is-new');
+    setTimeout(()=>first.classList.remove('is-new'), 800);
+  }
+
+  function setAutoStopLabel(isRunning){
+    const btn = document.getElementById('btn-auto-call-stop');
+    if(!btn) return;
+    btn.innerHTML = isRunning ? '⏸️ <span>Durdur</span>' : '⏯️ <span>Devam</span>';
+  }
+
+  function handleResetClick(){
+    resetCaller({ skipBackup: !called.length });
+  }
+
+  function getStorage(){
+    try {
+      return window.localStorage;
+    } catch(err) {
+      console.warn('localStorage erişilemedi:', err);
+      return null;
+    }
+  }
+
+  function saveState(){
+    const store = getStorage();
+    if(!store) return;
+    try {
+      const state = {
+        called: [...called],
+        lastNumber: called.length ? called[called.length - 1] : null,
+        lastAutoCallInterval,
+        autoRunning: !!autoCallTimer,
+        timestamp: Date.now()
+      };
+      store.setItem(STORAGE_KEY, JSON.stringify(state));
+      toggleRestoreButton();
+    } catch(err) {
+      console.warn('Oyun durumu kaydedilemedi:', err);
+    }
+  }
+
+  function backupState(){
+    if(!called.length) return;
+    const store = getStorage();
+    if(!store) return;
+    try {
+      const backup = {
+        called: [...called],
+        lastNumber: called[called.length - 1],
+        lastAutoCallInterval,
+        autoRunning: !!autoCallTimer,
+        timestamp: Date.now()
+      };
+      store.setItem(BACKUP_KEY, JSON.stringify(backup));
+      toggleRestoreButton();
+    } catch(err) {
+      console.warn('Yedek kaydedilemedi:', err);
+    }
+  }
+
+  function loadState(){
+    const store = getStorage();
+    if(!store) return false;
+    try {
+      const raw = store.getItem(STORAGE_KEY);
+      if(!raw) return false;
+      const state = JSON.parse(raw);
+      if(!state || !Array.isArray(state.called)) return false;
+
+      called = [...state.called];
+      lastAutoCallInterval = typeof state.lastAutoCallInterval === 'number' ? state.lastAutoCallInterval : 0;
+      const lastNumber = state.lastNumber != null ? state.lastNumber : (called.length ? called[called.length - 1] : null);
+      lastEl.textContent = lastNumber != null ? lastNumber : '–';
+      renderLists();
+  if(called.length) highlightLatestPill();
+      stopAutoCall(true, true);
+      if(state.autoRunning && lastAutoCallInterval > 0) {
+        startAutoCall(lastAutoCallInterval);
+      } else {
+        setAutoStopLabel(false);
+        setAutoIndicator(false);
+      }
+      return called.length > 0;
+    } catch(err) {
+      console.warn('Oyun durumu yüklenemedi:', err);
+      return false;
+    }
+  }
+
+  function restoreFromBackup(){
+    const store = getStorage();
+    if(!store) return false;
+    try {
+      const raw = store.getItem(BACKUP_KEY);
+      if(!raw) return false;
+      const state = JSON.parse(raw);
+      if(!state || !Array.isArray(state.called) || !state.called.length) return false;
+
+      called = [...state.called];
+      lastAutoCallInterval = typeof state.lastAutoCallInterval === 'number' ? state.lastAutoCallInterval : 0;
+      const lastNumber = state.lastNumber != null ? state.lastNumber : called[called.length - 1];
+      lastEl.textContent = lastNumber != null ? lastNumber : '–';
+      renderLists();
+  if(called.length) highlightLatestPill();
+      stopAutoCall(true, true);
+      isReading = false;
+      pausedForTTS = false;
+      if(state.autoRunning && lastAutoCallInterval > 0) {
+        startAutoCall(lastAutoCallInterval);
+      } else {
+        setAutoStopLabel(false);
+        setAutoIndicator(false);
+        saveState();
+      }
+      return true;
+    } catch(err) {
+      console.warn('Yedekten yükleme başarısız:', err);
+      return false;
+    }
+  }
+
+  function toggleRestoreButton(){
+    const btn = document.getElementById('btn-restore-game');
+    const store = getStorage();
+    if(!btn || !store) {
+      if(btn) btn.style.display = 'none';
+      return;
+    }
+    try {
+      const raw = store.getItem(BACKUP_KEY);
+      if(!raw) {
+        btn.style.display = 'none';
+        return;
+      }
+      const backup = JSON.parse(raw);
+      const hasBackup = backup && Array.isArray(backup.called) && backup.called.length > 0;
+      btn.style.display = hasBackup ? 'inline-flex' : 'none';
+    } catch(err) {
+      btn.style.display = 'none';
+    }
+  }
+
+  function openModal(modal){
+    if(!modal) return;
+    [drawnModal, boardModal].forEach(m => {
+      if(m && m !== modal) closeModal(m);
+    });
+    renderLists();
+    modal.classList.add('is-open');
+    modal.setAttribute('aria-hidden', 'false');
+    if(document.body) document.body.classList.add('modal-open');
+  }
+
+  function closeModal(modal){
+    if(!modal) return;
+    modal.classList.remove('is-open');
+    modal.setAttribute('aria-hidden', 'true');
+    if(document.body){
+      const anyOpen = document.querySelector('.modal.is-open');
+      if(!anyOpen) document.body.classList.remove('modal-open');
+    }
   }
 
   function buildBoard(){
@@ -99,12 +329,14 @@
   }
 
   function renderLists(){
-    gridDrawn.innerHTML='';
-    for(const n of [...called].reverse()){
-      const s=document.createElement('span'); 
-      s.className='pill'; 
-      s.textContent=n;
-      gridDrawn.appendChild(s);
+    if(gridDrawn) {
+      gridDrawn.innerHTML='';
+      for(const n of [...called].reverse()){
+        const s=document.createElement('span'); 
+        s.className='pill'; 
+        s.textContent=n;
+        gridDrawn.appendChild(s);
+      }
     }
     
     const remEl = document.getElementById('remaining-count');
@@ -203,6 +435,7 @@
 
   function checkAndAnnounceRemaining(){
     const remaining = 90 - called.length;
+    if(remaining > 45) return;
     
     // 45 sayı kaldığında
     if(remaining === 45) {
@@ -237,10 +470,17 @@
     document.getElementById('btn-call').disabled = false;
   });
 
-  function resetCaller(){ 
-    called=[]; 
-    lastEl.textContent='–'; 
-    renderLists(); 
+  function resetCaller(options = {}){
+    const { skipBackup = false, skipSave = false } = options;
+    if(!skipBackup) backupState();
+    called = [];
+    lastEl.textContent = '–';
+  lastEl.classList.remove('flash');
+    isReading = false;
+    pausedForTTS = false;
+    renderLists();
+    stopAutoCall();
+    if(!skipSave) saveState();
   }
 
   function callNumber(){
@@ -255,7 +495,12 @@
     called.push(n);
     console.log(`✨ Çekilen numara: ${n}`);
     lastEl.textContent=n;
+    lastEl.classList.remove('flash');
+    void lastEl.offsetWidth;
+    lastEl.classList.add('flash');
     renderLists();
+    highlightLatestPill();
+    saveState();
     speakNumber(n);
     
     // Kalan sayı uyarısını kontrol et
@@ -263,7 +508,7 @@
   }
 
   function startAutoCall(intervalSec) {
-    stopAutoCall();
+    stopAutoCall(true, true);
     if (intervalSec > 0) {
       lastAutoCallInterval = intervalSec;
       autoCallTimer = setInterval(() => {
@@ -272,18 +517,22 @@
           callNumber();
         } else if (called.length >= 90) {
           stopAutoCall();
+          saveState();
         }
       }, intervalSec * 1000);
-      document.getElementById('btn-auto-call-stop').textContent = 'Durdur';
+      setAutoStopLabel(true);
+      setAutoIndicator(true);
+      saveState();
     }
   }
 
-  function stopAutoCall() {
+  function stopAutoCall(skipButtonUpdate = false, skipIndicatorUpdate = false) {
     if (autoCallTimer) {
       clearInterval(autoCallTimer);
       autoCallTimer = null;
-      pausedForTTS = false; // Stop tuşuna basıldığında TTS pauseını da sıfırla
-      document.getElementById('btn-auto-call-stop').textContent = 'Devam';
     }
+    pausedForTTS = false; // Stop tuşuna basıldığında TTS pauseını da sıfırla
+    if(!skipButtonUpdate) setAutoStopLabel(false);
+    if(!skipIndicatorUpdate) setAutoIndicator(false);
   }
 })();
