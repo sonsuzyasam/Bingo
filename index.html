@@ -44,6 +44,10 @@
       <div style="min-width:120px;">
         <h3>Çekiliş</h3>
         <div id="last-number" class="last-number">–</div>
+        <div class="last-history">
+          <span class="history-label">Son çekilenler</span>
+          <div id="last-history" class="history-pills" aria-live="polite"></div>
+        </div>
           <div style="margin:12px 0; text-align:left;">
             <button id="btn-reset" class="btn btn-ghost">♻️ <span>Sıfırla</span></button>
           </div>
@@ -56,7 +60,10 @@
 
     <section class="panel">
       <div class="list-block">
-        <div id="remaining-count" style="margin:8px 0 12px 0; font-size:1.1em; color:#ff7a00; font-weight:600;"></div>
+  <div id="remaining-count" class="remaining-progress" aria-live="polite" data-total="90">
+          <span class="remaining-value">90</span>
+          <small>Kalan numara</small>
+        </div>
         <div class="list-head">Çekiliş Özeti</div>
         <p class="list-info">Çekilen sayıları görmek için "Çekilen Sayılar", tabloyu görmek için "1-90 Tablosu" butonuna dokunun.</p>
       </div>
@@ -241,6 +248,18 @@
       </div>
     </div>
   </div>
+
+  <nav class="mobile-actions" aria-label="Hızlı işlemler">
+    <button type="button" id="mobile-open-last" class="mobile-action-btn" aria-controls="last-modal">
+      🔢<span>Son</span>
+    </button>
+    <button type="button" id="mobile-open-drawn" class="mobile-action-btn" aria-controls="drawn-modal">
+      📋<span>Liste</span>
+    </button>
+    <button type="button" id="mobile-open-board" class="mobile-action-btn" aria-controls="board-modal">
+      📊<span>Tablo</span>
+    </button>
+  </nav>
 
   <script defer src="./bingo.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/qrcodejs2@0.0.2/qrcode.min.js"></script>

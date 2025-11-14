@@ -7,9 +7,17 @@
   const lastEl = document.getElementById('last-number');
   const lastModal = document.getElementById('last-modal');
   const lastModalValue = document.getElementById('last-modal-value');
+  const lastHistoryEl = document.getElementById('last-history');
+  const remainingCountEl = document.getElementById('remaining-count');
   const drawnModal = document.getElementById('drawn-modal');
   const boardModal = document.getElementById('board-modal');
   const autoIndicatorEl = document.getElementById('auto-indicator');
+  const btnMobileOpenLast = document.getElementById('mobile-open-last');
+  const btnMobileOpenDrawn = document.getElementById('mobile-open-drawn');
+  const btnMobileOpenBoard = document.getElementById('mobile-open-board');
+  const mobileViewQuery = window.matchMedia('(max-width: 700px)');
+  const TOTAL_NUMBERS = 90;
+  const MAX_HISTORY = 6;
   const STORAGE_KEY = 'bingoStateV1';
   const BACKUP_KEY = 'bingoStateBackupV1';
   let called = [];
@@ -17,6 +25,7 @@
   let lastAutoCallInterval = 0;
   let isReading = false; // TTS okuma durumu
   let pausedForTTS = false; // TTS için duraklatıldı mı?
+  let lastModalAutoClose = null;
 
   const ready = fn => (document.readyState==='loading' ? document.addEventListener('DOMContentLoaded', fn) : fn());
   ready(init);
@@ -62,11 +71,11 @@
     const autoSelect = document.getElementById('auto-call-select');
     const autoStop = document.getElementById('btn-auto-call-stop');
     const btnRestore = document.getElementById('btn-restore-game');
-  const btnOpenLast = document.getElementById('btn-open-last');
-  const btnCloseLast = document.getElementById('btn-close-last');
-  const btnLastOpenDrawn = document.getElementById('btn-last-open-drawn');
-  const btnLastOpenBoard = document.getElementById('btn-last-open-board');
-  const btnOpenDrawn = document.getElementById('btn-open-drawn');
+    const btnOpenLast = document.getElementById('btn-open-last');
+    const btnCloseLast = document.getElementById('btn-close-last');
+    const btnLastOpenDrawn = document.getElementById('btn-last-open-drawn');
+    const btnLastOpenBoard = document.getElementById('btn-last-open-board');
+    const btnOpenDrawn = document.getElementById('btn-open-drawn');
     const btnCloseDrawn = document.getElementById('btn-close-drawn');
     const btnOpenBoard = document.getElementById('btn-open-board');
     const btnCloseBoard = document.getElementById('btn-close-board');
@@ -75,21 +84,75 @@
       btnCall: !!btnCall,
       btnReset: !!btnReset,
       autoSelect: !!autoSelect,
-    autoStop: !!autoStop,
-    btnRestore: !!btnRestore,
-  btnOpenLast: !!btnOpenLast,
-  btnCloseLast: !!btnCloseLast,
-  btnLastOpenDrawn: !!btnLastOpenDrawn,
-  btnLastOpenBoard: !!btnLastOpenBoard,
-  btnOpenDrawn: !!btnOpenDrawn,
-    btnCloseDrawn: !!btnCloseDrawn,
-    btnOpenBoard: !!btnOpenBoard,
-    btnCloseBoard: !!btnCloseBoard,
+      autoStop: !!autoStop,
+      btnRestore: !!btnRestore,
+      btnOpenLast: !!btnOpenLast,
+      btnCloseLast: !!btnCloseLast,
+      btnLastOpenDrawn: !!btnLastOpenDrawn,
+      btnLastOpenBoard: !!btnLastOpenBoard,
+      btnOpenDrawn: !!btnOpenDrawn,
+      btnCloseDrawn: !!btnCloseDrawn,
+      btnOpenBoard: !!btnOpenBoard,
+      btnCloseBoard: !!btnCloseBoard,
+      btnMobileOpenLast: !!btnMobileOpenLast,
+      btnMobileOpenDrawn: !!btnMobileOpenDrawn,
+      btnMobileOpenBoard: !!btnMobileOpenBoard,
       lastEl: !!lastEl,
       board: !!board,
       gridDrawn: !!gridDrawn
     });
     
+    const attachTouchFriendly = (el, handler) => {
+      if(!el) return;
+      let touchHandled = false;
+      el.addEventListener('click', function(evt){
+        if(touchHandled){
+          touchHandled = false;
+          return;
+        }
+        handler(evt);
+      });
+      if(window.PointerEvent){
+        el.addEventListener('pointerup', function(evt){
+          if(evt.pointerType === 'touch'){
+            touchHandled = true;
+            evt.preventDefault();
+            handler(evt);
+            setTimeout(() => { touchHandled = false; }, 0);
+          }
+        });
+      } else {
+        el.addEventListener('touchend', function(evt){
+          touchHandled = true;
+          evt.preventDefault();
+          handler(evt);
+          setTimeout(() => { touchHandled = false; }, 0);
+        }, { passive: false });
+      }
+    };
+
+    if(mobileViewQuery && typeof mobileViewQuery.addEventListener === 'function'){
+      mobileViewQuery.addEventListener('change', clearAutoCloseTimer);
+    }
+
+    const openLastHandler = evt => {
+      if(evt && typeof evt.preventDefault === 'function') evt.preventDefault();
+      const latest = called.length ? called[called.length - 1] : null;
+      updateLastNumberDisplay(latest);
+      clearAutoCloseTimer();
+      openModal(lastModal);
+    };
+    const openDrawnHandler = evt => {
+      if(evt && typeof evt.preventDefault === 'function') evt.preventDefault();
+      clearAutoCloseTimer();
+      openModal(drawnModal);
+    };
+    const openBoardHandler = evt => {
+      if(evt && typeof evt.preventDefault === 'function') evt.preventDefault();
+      clearAutoCloseTimer();
+      openModal(boardModal);
+    };
+
     if(btnCall) btnCall.addEventListener('click', callNumber);
     if(btnReset) btnReset.addEventListener('click', handleResetClick);
     
@@ -120,35 +183,37 @@
       }
     });
 
-    const openLastHandler = () => {
-      const latest = called.length ? called[called.length - 1] : null;
-      updateLastNumberDisplay(latest);
-      openModal(lastModal);
-    };
-    if(btnOpenLast) {
-      btnOpenLast.addEventListener('click', openLastHandler);
-      btnOpenLast.addEventListener('pointerup', openLastHandler);
-    }
+    attachTouchFriendly(btnOpenLast, openLastHandler);
+    attachTouchFriendly(btnMobileOpenLast, openLastHandler);
     if(btnCloseLast) btnCloseLast.addEventListener('click', () => closeModal(lastModal));
-    if(lastModal) lastModal.addEventListener('click', function(evt){
-      if(evt.target === lastModal) closeModal(lastModal);
-    });
-    if(btnLastOpenDrawn) btnLastOpenDrawn.addEventListener('click', () => {
+    if(lastModal){
+      lastModal.addEventListener('click', function(evt){
+        if(evt.target === lastModal) closeModal(lastModal);
+      });
+      const lastCard = lastModal.querySelector('.modal-card');
+      if(lastCard){
+        lastCard.addEventListener('pointerdown', clearAutoCloseTimer);
+        lastCard.addEventListener('touchstart', clearAutoCloseTimer, { passive: true });
+      }
+    }
+    if(btnLastOpenDrawn) attachTouchFriendly(btnLastOpenDrawn, evt => {
       closeModal(lastModal);
-      openModal(drawnModal);
+      openDrawnHandler(evt);
     });
-    if(btnLastOpenBoard) btnLastOpenBoard.addEventListener('click', () => {
+    if(btnLastOpenBoard) attachTouchFriendly(btnLastOpenBoard, evt => {
       closeModal(lastModal);
-      openModal(boardModal);
+      openBoardHandler(evt);
     });
 
-    if(btnOpenDrawn) btnOpenDrawn.addEventListener('click', () => openModal(drawnModal));
+    attachTouchFriendly(btnOpenDrawn, openDrawnHandler);
+    attachTouchFriendly(btnMobileOpenDrawn, openDrawnHandler);
     if(btnCloseDrawn) btnCloseDrawn.addEventListener('click', () => closeModal(drawnModal));
     if(drawnModal) drawnModal.addEventListener('click', function(evt){
       if(evt.target === drawnModal) closeModal(drawnModal);
     });
 
-    if(btnOpenBoard) btnOpenBoard.addEventListener('click', () => openModal(boardModal));
+    attachTouchFriendly(btnOpenBoard, openBoardHandler);
+    attachTouchFriendly(btnMobileOpenBoard, openBoardHandler);
     if(btnCloseBoard) btnCloseBoard.addEventListener('click', () => closeModal(boardModal));
     if(boardModal) boardModal.addEventListener('click', function(evt){
       if(evt.target === boardModal) closeModal(boardModal);
@@ -320,6 +385,70 @@
     }
   }
 
+  function clearAutoCloseTimer(){
+    if(lastModalAutoClose){
+      clearTimeout(lastModalAutoClose);
+      lastModalAutoClose = null;
+    }
+  }
+
+  function isMobileView(){
+    try {
+      return mobileViewQuery ? mobileViewQuery.matches : window.innerWidth <= 700;
+    } catch(_) {
+      return window.innerWidth <= 700;
+    }
+  }
+
+  // Briefly surface the last number as a modal on mobile after manual draws.
+  function maybeAutoShowLastModal(){
+    if(!lastModal || !isMobileView()) return;
+    if(!called.length) return;
+    if(autoCallTimer) return;
+    if(lastModal.classList.contains('is-open')) return;
+    const activeModal = document.querySelector('.modal.is-open');
+    if(activeModal && activeModal !== lastModal) return;
+    clearAutoCloseTimer();
+    openModal(lastModal);
+    lastModalAutoClose = setTimeout(() => {
+      if(lastModal && lastModal.classList.contains('is-open')) {
+        closeModal(lastModal);
+      }
+      lastModalAutoClose = null;
+    }, 2400);
+  }
+
+  // Show a compact chip list of the most recent draws.
+  function renderLastHistory(){
+    if(!lastHistoryEl) return;
+    lastHistoryEl.innerHTML = '';
+    const recent = [...called].slice(-MAX_HISTORY).reverse();
+    if(!recent.length){
+      const placeholder = document.createElement('span');
+      placeholder.className = 'history-placeholder';
+      placeholder.textContent = 'Henüz numara yok';
+      lastHistoryEl.appendChild(placeholder);
+      return;
+    }
+    recent.forEach((n, idx) => {
+      const pill = document.createElement('span');
+      pill.className = 'history-pill' + (idx === 0 ? ' is-latest' : '');
+      pill.textContent = n;
+      lastHistoryEl.appendChild(pill);
+    });
+  }
+
+  function updateRemainingProgress(){
+    if(!remainingCountEl) return;
+    const remaining = Math.max(0, TOTAL_NUMBERS - called.length);
+    const angle = Math.min(360, ((TOTAL_NUMBERS - remaining) / TOTAL_NUMBERS) * 360);
+    remainingCountEl.style.setProperty('--angle', `${angle}deg`);
+    remainingCountEl.setAttribute('data-total', TOTAL_NUMBERS);
+    const valueEl = remainingCountEl.querySelector('.remaining-value');
+    if(valueEl) valueEl.textContent = remaining;
+    remainingCountEl.setAttribute('aria-label', `Kalan numara: ${remaining}`);
+  }
+
   function updateLastNumberDisplay(value, options = {}){
     const { flash = false } = options;
     const text = value != null ? value : '–';
@@ -350,6 +479,7 @@
 
   function closeModal(modal){
     if(!modal) return;
+    if(modal === lastModal) clearAutoCloseTimer();
     modal.classList.remove('is-open');
     modal.setAttribute('aria-hidden', 'true');
     if(document.body){
@@ -389,10 +519,8 @@
       }
     }
     
-    const remEl = document.getElementById('remaining-count');
-    if (remEl) {
-      remEl.textContent = `Kalan Numara Sayısı: ${90 - called.length}`;
-    }
+    updateRemainingProgress();
+    renderLastHistory();
     markBoard();
   }
 
@@ -484,7 +612,7 @@
   }
 
   function checkAndAnnounceRemaining(){
-    const remaining = 90 - called.length;
+  const remaining = TOTAL_NUMBERS - called.length;
     if(remaining > 45) return;
     
     // 45 sayı kaldığında
@@ -534,18 +662,19 @@
 
   function callNumber(){
     console.log('🎲 Numara çekiliyor...');
-    if(called.length===90) {
+    if(called.length===TOTAL_NUMBERS) {
       console.log('⚠️ Tüm numaralar çıktı!');
       speakAlert('Tüm numaralar çıktı! Oyun bitti!');
       return;
     }
     let n; 
-    do{ n=(Math.random()*90|0)+1; }while(called.includes(n));
+    do{ n=(Math.random()*TOTAL_NUMBERS|0)+1; }while(called.includes(n));
     called.push(n);
     console.log(`✨ Çekilen numara: ${n}`);
-  updateLastNumberDisplay(n, { flash: true });
+    updateLastNumberDisplay(n, { flash: true });
     renderLists();
-    highlightLatestPill();
+    maybeAutoShowLastModal();
+  highlightLatestPill();
     saveState();
     speakNumber(n);
     
@@ -559,9 +688,9 @@
       lastAutoCallInterval = intervalSec;
       autoCallTimer = setInterval(() => {
         // TTS okuma sırasında numara çekme
-        if (!isReading && called.length < 90) {
+        if (!isReading && called.length < TOTAL_NUMBERS) {
           callNumber();
-        } else if (called.length >= 90) {
+        } else if (called.length >= TOTAL_NUMBERS) {
           stopAutoCall();
           saveState();
         }
