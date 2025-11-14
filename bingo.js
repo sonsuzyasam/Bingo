@@ -26,6 +26,9 @@
   let isReading = false; // TTS okuma durumu
   let pausedForTTS = false; // TTS için duraklatıldı mı?
   let lastModalAutoClose = null;
+  let reopenLastFrom = null;
+  let switchingFromLast = false;
+  let gameCompleted = false;
 
   const ready = fn => (document.readyState==='loading' ? document.addEventListener('DOMContentLoaded', fn) : fn());
   ready(init);
@@ -146,11 +149,13 @@
       if(evt && typeof evt.preventDefault === 'function') evt.preventDefault();
       clearAutoCloseTimer();
       openModal(drawnModal);
+      if(!switchingFromLast) reopenLastFrom = null;
     };
     const openBoardHandler = evt => {
       if(evt && typeof evt.preventDefault === 'function') evt.preventDefault();
       clearAutoCloseTimer();
       openModal(boardModal);
+      if(!switchingFromLast) reopenLastFrom = null;
     };
 
     if(btnCall) btnCall.addEventListener('click', callNumber);
@@ -202,12 +207,16 @@
       }
     }
     if(btnLastOpenDrawn) attachTouchFriendly(btnLastOpenDrawn, evt => {
-      closeModal(lastModal);
+      reopenLastFrom = drawnModal;
+      switchingFromLast = true;
       openDrawnHandler(evt);
+      switchingFromLast = false;
     });
     if(btnLastOpenBoard) attachTouchFriendly(btnLastOpenBoard, evt => {
-      closeModal(lastModal);
+      reopenLastFrom = boardModal;
+      switchingFromLast = true;
       openBoardHandler(evt);
+      switchingFromLast = false;
     });
 
     attachTouchFriendly(btnOpenDrawn, openDrawnHandler);
@@ -226,9 +235,9 @@
 
     document.addEventListener('keydown', function(evt){
       if(evt.key === 'Escape') {
-        closeModal(lastModal);
-        closeModal(drawnModal);
-        closeModal(boardModal);
+        const openStack = [boardModal, drawnModal, lastModal];
+        const topModal = openStack.find(m => m && m.classList.contains('is-open'));
+        if(topModal) closeModal(topModal);
       }
     });
 
@@ -318,6 +327,9 @@
       if(!state || !Array.isArray(state.called)) return false;
 
       called = [...state.called];
+    gameCompleted = called.length >= TOTAL_NUMBERS;
+    reopenLastFrom = null;
+    switchingFromLast = false;
       lastAutoCallInterval = typeof state.lastAutoCallInterval === 'number' ? state.lastAutoCallInterval : 0;
       const lastNumber = state.lastNumber != null ? state.lastNumber : (called.length ? called[called.length - 1] : null);
     updateLastNumberDisplay(lastNumber);
@@ -347,6 +359,9 @@
       if(!state || !Array.isArray(state.called) || !state.called.length) return false;
 
       called = [...state.called];
+    gameCompleted = called.length >= TOTAL_NUMBERS;
+    reopenLastFrom = null;
+    switchingFromLast = false;
       lastAutoCallInterval = typeof state.lastAutoCallInterval === 'number' ? state.lastAutoCallInterval : 0;
       const lastNumber = state.lastNumber != null ? state.lastNumber : called[called.length - 1];
     updateLastNumberDisplay(lastNumber);
@@ -484,12 +499,22 @@
 
   function closeModal(modal){
     if(!modal) return;
-    if(modal === lastModal) clearAutoCloseTimer();
+    const shouldReopenLast = reopenLastFrom === modal;
+    if(modal === lastModal){
+      if(!switchingFromLast) reopenLastFrom = null;
+      clearAutoCloseTimer();
+    }
     modal.classList.remove('is-open');
     modal.setAttribute('aria-hidden', 'true');
     if(document.body){
       const anyOpen = document.querySelector('.modal.is-open');
       if(!anyOpen) document.body.classList.remove('modal-open');
+    }
+    if(shouldReopenLast && lastModal && lastModal !== modal){
+      reopenLastFrom = null;
+      if(!lastModal.classList.contains('is-open')){
+        openModal(lastModal);
+      }
     }
   }
 
@@ -657,6 +682,10 @@
     const { skipBackup = false, skipSave = false } = options;
     if(!skipBackup) backupState();
     called = [];
+    clearAutoCloseTimer();
+    reopenLastFrom = null;
+    switchingFromLast = false;
+    gameCompleted = false;
     updateLastNumberDisplay(null);
     isReading = false;
     pausedForTTS = false;
@@ -667,9 +696,13 @@
 
   function callNumber(){
     console.log('🎲 Numara çekiliyor...');
+    if(gameCompleted && called.length === TOTAL_NUMBERS) {
+      resetCaller({ skipBackup: true });
+    }
     if(called.length===TOTAL_NUMBERS) {
       console.log('⚠️ Tüm numaralar çıktı!');
       speakAlert('Tüm numaralar çıktı! Oyun bitti!');
+      gameCompleted = true;
       return;
     }
     let n; 
@@ -680,6 +713,7 @@
     renderLists();
     maybeAutoShowLastModal();
   highlightLatestPill();
+    gameCompleted = called.length === TOTAL_NUMBERS;
     saveState();
     speakNumber(n);
     
