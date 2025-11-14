@@ -263,8 +263,9 @@
 
   function setAutoStopLabel(isRunning){
     const btn = document.getElementById('btn-auto-call-stop');
-    if(!btn) return;
-    btn.innerHTML = isRunning ? '⏸️ <span>Durdur</span>' : '⏯️ <span>Devam</span>';
+    const modalBtn = document.getElementById('btn-last-auto-stop');
+    if(btn) btn.innerHTML = isRunning ? '⏸️ <span>Durdur</span>' : '⏯️ <span>Devam</span>';
+    if(modalBtn) modalBtn.innerHTML = isRunning ? '⏸️ <span>Durdur</span>' : '⏯️ <span>Devam</span>';
   }
 
   function handleResetClick(){
