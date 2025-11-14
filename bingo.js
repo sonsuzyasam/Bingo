@@ -120,11 +120,15 @@
       }
     });
 
-    if(btnOpenLast) btnOpenLast.addEventListener('click', () => {
+    const openLastHandler = () => {
       const latest = called.length ? called[called.length - 1] : null;
       updateLastNumberDisplay(latest);
       openModal(lastModal);
-    });
+    };
+    if(btnOpenLast) {
+      btnOpenLast.addEventListener('click', openLastHandler);
+      btnOpenLast.addEventListener('pointerup', openLastHandler);
+    }
     if(btnCloseLast) btnCloseLast.addEventListener('click', () => closeModal(lastModal));
     if(lastModal) lastModal.addEventListener('click', function(evt){
       if(evt.target === lastModal) closeModal(lastModal);
