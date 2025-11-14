@@ -22,6 +22,7 @@
     <h1>BİNGOBALA "İster Tombala de İster Bingo"</h1>
       <div class="actions">
         <button id="btn-call" class="btn btn-large">🎲 <span>Numara Çek</span></button>
+        <button id="btn-open-last" class="btn btn-ghost">🔢 <span>Son Numara</span></button>
         <button id="btn-open-drawn" class="btn btn-ghost">📋 <span>Çekilen Sayılar</span></button>
         <button id="btn-open-board" class="btn btn-ghost">📊 <span>1-90 Tablosu</span></button>
         <button id="btn-restore-game" class="btn btn-ghost" style="display:none;">⏪ <span>Oyunu Geri Yükle</span></button>
@@ -193,6 +194,22 @@
       <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
     </div>
   </footer>
+
+  <div id="last-modal" class="modal" aria-hidden="true">
+    <div class="modal-card modal-last" role="dialog" aria-modal="true" aria-labelledby="last-modal-title">
+      <div class="modal-header">
+        <h3 id="last-modal-title">Son Çekilen Numara</h3>
+        <button type="button" id="btn-close-last" class="modal-close" aria-label="Kapat">&times;</button>
+      </div>
+      <div class="modal-body modal-body-last">
+        <div id="last-modal-value" class="last-modal-number">–</div>
+        <div class="last-modal-actions">
+          <button type="button" id="btn-last-open-drawn" class="btn btn-ghost">📋 <span>Çekilen Sayılar</span></button>
+          <button type="button" id="btn-last-open-board" class="btn btn-ghost">📊 <span>1-90 Tablosu</span></button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <div id="drawn-modal" class="modal" aria-hidden="true">
     <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="drawn-modal-title">
