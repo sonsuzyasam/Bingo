@@ -513,9 +513,6 @@ body.modal-open .mobile-actions{opacity:0; pointer-events:none; visibility:hidde
     flex-direction: column;
     gap: 6px;
   }
-  #btn-open-last{
-    display:none;
-  }
   .container {
     grid-template-columns: 1fr;
     padding: 8px 2px;
