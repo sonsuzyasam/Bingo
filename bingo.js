@@ -78,6 +78,8 @@
     const btnCloseLast = document.getElementById('btn-close-last');
     const btnLastOpenDrawn = document.getElementById('btn-last-open-drawn');
     const btnLastOpenBoard = document.getElementById('btn-last-open-board');
+    const btnLastReset = document.getElementById('btn-last-reset');
+    const btnLastAutoStop = document.getElementById('btn-last-auto-stop');
     const btnOpenDrawn = document.getElementById('btn-open-drawn');
     const btnCloseDrawn = document.getElementById('btn-close-drawn');
     const btnOpenBoard = document.getElementById('btn-open-board');
@@ -97,6 +99,8 @@
       btnCloseDrawn: !!btnCloseDrawn,
       btnOpenBoard: !!btnOpenBoard,
       btnCloseBoard: !!btnCloseBoard,
+      btnLastReset: !!btnLastReset,
+      btnLastAutoStop: !!btnLastAutoStop,
       btnMobileOpenLast: !!btnMobileOpenLast,
       btnMobileOpenDrawn: !!btnMobileOpenDrawn,
       btnMobileOpenBoard: !!btnMobileOpenBoard,
@@ -171,7 +175,8 @@
       }
     });
     
-    if(autoStop) autoStop.addEventListener('click', function(){
+    const toggleAutoCall = evt => {
+      if(evt && typeof evt.preventDefault === 'function') evt.preventDefault();
       if (!autoCallTimer) {
         const selectVal = autoSelect ? parseInt(autoSelect.value, 10) : 0;
         const interval = lastAutoCallInterval || selectVal || 3;
@@ -180,7 +185,9 @@
         stopAutoCall();
         saveState();
       }
-    });
+    };
+
+    if(autoStop) autoStop.addEventListener('click', toggleAutoCall);
 
     if(btnRestore) btnRestore.addEventListener('click', function(){
       if(restoreFromBackup()) {
@@ -195,6 +202,12 @@
       }, { passive: false });
     }
     attachTouchFriendly(btnMobileOpenLast, openLastHandler);
+    if(btnLastReset) attachTouchFriendly(btnLastReset, evt => {
+      if(evt && typeof evt.preventDefault === 'function') evt.preventDefault();
+      handleResetClick();
+      if(lastModal && !lastModal.classList.contains('is-open')) openModal(lastModal);
+    });
+    if(btnLastAutoStop) attachTouchFriendly(btnLastAutoStop, toggleAutoCall);
     if(btnCloseLast) btnCloseLast.addEventListener('click', () => closeModal(lastModal));
     if(lastModal){
       lastModal.addEventListener('click', function(evt){
