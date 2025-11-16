@@ -10,11 +10,13 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <meta name="google-adsense-account" content="ca-pub-7309845525285029">
+  <meta name="theme-color" content="#120B2D" />
   <title>BingoBala</title>
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="icon" type="image/png" sizes="192x192" href="./assets/icon-192.png" />
+  <link rel="apple-touch-icon" href="./assets/icon-192.png" />
   <link rel="stylesheet" href="./style.css" />
   <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7309845525285029"
-     crossorigin="anonymous"></script>
 </head>
 <body>
   <div class="app-shell">
@@ -56,7 +58,7 @@
     </header>
 
     <main class="app-main">
-      <section class="panel game-panel">
+      <section id="call" class="panel game-panel">
         <header class="panel-head">
           <div class="panel-meta">
             <span class="pill meta-pill" data-i18n="panel.draw.title">Çekiliş</span>
@@ -103,7 +105,7 @@
           </div>
         </section>
 
-        <section class="panel live-stats">
+        <section id="board" class="panel live-stats">
           <header class="panel-head">
             <span class="pill meta-pill" data-i18n="panel.control.title">📊 Kontrol Tablosu</span>
             <button id="mobile-open-board" class="btn btn-ghost compact">🔍 <span data-i18n="button.board.open">Tabloyu Aç</span></button>
@@ -178,21 +180,39 @@
         <a href="https://sonsuzyasam.github.io/" target="_blank" rel="noopener">Ana Sayfa</a>
         <a href="https://sonsuzyasam.github.io/taksi-hesaplama/" target="_blank" rel="noopener">Taksi Hesaplama</a>
         <a href="https://sonsuzyasam.github.io/Word-BingoBala/" target="_blank" rel="noopener">Word BingoBala</a>
+        <a href="./privacy-policy.html" target="_blank" rel="noopener">Gizlilik Politikası</a>
       </nav>
     </footer>
   </div>
 
-  <div class="ad-slot">
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7309845525285029"
-      crossorigin="anonymous"></script>
+  <div class="ad-slot" data-ad-client="ca-pub-7309845525285029">
     <ins class="adsbygoogle"
       style="display:block"
       data-ad-client="ca-pub-7309845525285029"
       data-ad-slot="1234567890"
       data-ad-format="auto"
       data-full-width-responsive="true"></ins>
-    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
   </div>
+  <script>
+    (function(){
+      var isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+      if(isStandalone) return;
+      if(window.__bingobalaAdsLoaded) return;
+      window.__bingobalaAdsLoaded = true;
+      var script = document.createElement('script');
+      script.async = true;
+      script.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7309845525285029';
+      script.setAttribute('crossorigin', 'anonymous');
+      script.onload = function(){
+        try {
+          (window.adsbygoogle = window.adsbygoogle || []).push({});
+        } catch(err) {
+          console.warn('AdSense yüklenemedi:', err);
+        }
+      };
+      document.head.appendChild(script);
+    })();
+  </script>
 
   <div id="last-modal" class="modal" aria-hidden="true">
     <div class="modal-card modal-last" role="dialog" aria-modal="true" aria-labelledby="last-modal-title">
@@ -274,6 +294,15 @@
       }
       if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', initQR); else initQR();
     })();
+  </script>
+  <script>
+    if('serviceWorker' in navigator){
+      window.addEventListener('load', function(){
+        navigator.serviceWorker.register('./service-worker.js').catch(function(err){
+          console.warn('Service worker kaydedilemedi:', err);
+        });
+      });
+    }
   </script>
 </body>
 </html>

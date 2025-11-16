@@ -8,7 +8,11 @@
   <meta property="og:description" content="Mobil uyumlu bingo kartları PDF olarak üretin" />
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#120B2D" />
   <title>BingoBala - PDF Kart Üretici</title>
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="icon" type="image/png" sizes="192x192" href="./assets/icon-192.png" />
+  <link rel="apple-touch-icon" href="./assets/icon-192.png" />
   <link rel="stylesheet" href="./style.css" />
   <style>
     body.pdf-page {
@@ -237,5 +241,14 @@
 
   <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
   <script src="./pdf-generator.js"></script>
+  <script>
+    if('serviceWorker' in navigator){
+      window.addEventListener('load', function(){
+        navigator.serviceWorker.register('./service-worker.js').catch(function(err){
+          console.warn('Service worker kaydı başarısız:', err);
+        });
+      });
+    }
+  </script>
 </body>
 </html>
