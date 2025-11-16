@@ -9,8 +9,8 @@
   const lastModalValue = document.getElementById('last-modal-value');
   const lastHistoryEl = document.getElementById('last-history');
   const remainingCountEl = document.getElementById('remaining-count');
-  const drawnModal = document.getElementById('drawn-modal');
-  const boardModal = document.getElementById('board-modal');
+  let drawnModal = document.getElementById('drawn-modal');
+  let boardModal = document.getElementById('board-modal');
   const autoIndicatorEl = document.getElementById('auto-indicator');
   const btnMobileOpenLast = document.getElementById('mobile-open-last');
   const btnMobileOpenDrawn = document.getElementById('mobile-open-drawn');
@@ -335,6 +335,20 @@
   const ready = fn => (document.readyState==='loading' ? document.addEventListener('DOMContentLoaded', fn) : fn());
   ready(init);
 
+  function ensureDrawnModal(){
+    if(!drawnModal || !drawnModal.isConnected){
+      drawnModal = document.getElementById('drawn-modal');
+    }
+    return drawnModal;
+  }
+
+  function ensureBoardModal(){
+    if(!boardModal || !boardModal.isConnected){
+      boardModal = document.getElementById('board-modal');
+    }
+    return boardModal;
+  }
+
   function hasOptionValue(selectEl, value){
     if(!selectEl) return false;
     const normalized = String(value).toLowerCase();
@@ -514,6 +528,8 @@
 
   function setupEventListeners(){
     console.log('🎧 Event listener\'lar kuruluyor...');
+    drawnModal = ensureDrawnModal();
+    boardModal = ensureBoardModal();
     const btnCall = document.getElementById('btn-call');
     const btnReset = document.getElementById('btn-reset'); 
     const autoSelect = document.getElementById('auto-call-select');
@@ -599,7 +615,7 @@
     const openDrawnHandler = evt => {
       if(evt && typeof evt.preventDefault === 'function') evt.preventDefault();
       clearAutoCloseTimer();
-      const targetModal = drawnModal || document.getElementById('drawn-modal');
+      const targetModal = ensureDrawnModal();
       if(!targetModal){
         console.warn('Çekilen sayılar penceresi bulunamadı.');
         return;
@@ -610,7 +626,12 @@
     const openBoardHandler = evt => {
       if(evt && typeof evt.preventDefault === 'function') evt.preventDefault();
       clearAutoCloseTimer();
-      openModal(boardModal);
+      const targetModal = ensureBoardModal();
+      if(!targetModal){
+        console.warn('Tablo penceresi bulunamadı.');
+        return;
+      }
+      openModal(targetModal);
       if(!switchingFromLast) reopenLastFrom = null;
     };
 
@@ -692,13 +713,13 @@
       }
     }
     if(btnLastOpenDrawn) attachTouchFriendly(btnLastOpenDrawn, evt => {
-      reopenLastFrom = drawnModal;
+      reopenLastFrom = ensureDrawnModal();
       switchingFromLast = true;
       openDrawnHandler(evt);
       switchingFromLast = false;
     });
     if(btnLastOpenBoard) attachTouchFriendly(btnLastOpenBoard, evt => {
-      reopenLastFrom = boardModal;
+      reopenLastFrom = ensureBoardModal();
       switchingFromLast = true;
       openBoardHandler(evt);
       switchingFromLast = false;
@@ -713,9 +734,10 @@
 
     attachTouchFriendly(btnOpenBoard, openBoardHandler);
     attachTouchFriendly(btnMobileOpenBoard, openBoardHandler);
-    if(btnCloseBoard) btnCloseBoard.addEventListener('click', () => closeModal(boardModal));
-    if(boardModal) boardModal.addEventListener('click', function(evt){
-      if(evt.target === boardModal) closeModal(boardModal);
+    if(btnCloseBoard) btnCloseBoard.addEventListener('click', () => closeModal(ensureBoardModal()));
+    const boardModalRef = ensureBoardModal();
+    if(boardModalRef) boardModalRef.addEventListener('click', function(evt){
+      if(evt.target === boardModalRef) closeModal(boardModalRef);
     });
 
     document.addEventListener('keydown', function(evt){
@@ -991,6 +1013,8 @@
 
   function openModal(modal){
     if(!modal) return;
+    drawnModal = ensureDrawnModal();
+    boardModal = ensureBoardModal();
     [lastModal, drawnModal, boardModal].forEach(m => {
       if(m && m !== modal) closeModal(m);
     });
