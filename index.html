@@ -19,42 +19,42 @@
 <body>
   
   <header class="topbar">
-    <h1>BİNGOBALA "İster Tombala de İster Bingo"</h1>
+    <h1 data-i18n="header.hero">BİNGOBALA "İster Tombala de İster Bingo"</h1>
       <div class="actions">
-        <button id="btn-call" class="btn btn-large">🎲 <span>Numara Çek</span></button>
-        <button id="btn-open-last" class="btn btn-ghost">🔢 <span>Son Numara</span></button>
-        <button id="btn-open-drawn" class="btn btn-ghost">📋 <span>Çekilen Sayılar</span></button>
-        <button id="btn-open-board" class="btn btn-ghost">📊 <span>1-90 Tablosu</span></button>
-        <button id="btn-restore-game" class="btn btn-ghost" style="display:none;">⏪ <span>Oyunu Geri Yükle</span></button>
+        <button id="btn-call" class="btn btn-large">🎲 <span data-i18n="button.call">Numara Çek</span></button>
+        <button id="btn-open-last" class="btn btn-ghost">🔢 <span data-i18n="button.last">Son Numara</span></button>
+        <button id="btn-open-drawn" class="btn btn-ghost">📋 <span data-i18n="button.drawn">Çekilen Sayılar</span></button>
+        <button id="btn-open-board" class="btn btn-ghost">📊 <span data-i18n="button.board">1-90 Tablosu</span></button>
+        <button id="btn-restore-game" class="btn btn-ghost" style="display:none;">⏪ <span data-i18n="button.restore">Oyunu Geri Yükle</span></button>
       </div>
       <div style="margin-top:16px; text-align:left;">
-        <label for="auto-call-select" class="label-inline">⚙️ Otomatik Numara Çek:</label>
+        <label for="auto-call-select" class="label-inline" data-i18n="label.autoCall">⚙️ Otomatik Numara Çek:</label>
         <select id="auto-call-select" class="control-inline">
-          <option value="0">Kapalı</option>
-          <option value="3">3 saniye</option>
-          <option value="5">5 saniye</option>
-          <option value="10">10 saniye</option>
+          <option value="0" data-i18n="option.auto.off">Kapalı</option>
+          <option value="3" data-i18n="option.auto.3s">3 saniye</option>
+          <option value="5" data-i18n="option.auto.5s">5 saniye</option>
+          <option value="10" data-i18n="option.auto.10s">10 saniye</option>
         </select>
-  <button id="btn-auto-call-stop" class="btn btn-ghost control-inline">⏯️ <span>Devam</span></button>
-        <span id="auto-indicator" class="auto-indicator" aria-live="polite">Manuel</span>
+  <button id="btn-auto-call-stop" class="btn btn-ghost control-inline">⏯️ <span data-i18n="button.resume">Devam</span></button>
+        <span id="auto-indicator" class="auto-indicator" aria-live="polite" data-i18n="status.manual">Manuel</span>
       </div>
   </header>
 
     <section class="panel" id="caller" style="display:flex; gap:32px; align-items:flex-start;">
       <div style="min-width:120px;">
-        <h3>Çekiliş</h3>
+        <h3 data-i18n="panel.draw.title">Çekiliş</h3>
         <div id="last-number" class="last-number">–</div>
         <div class="last-history">
-          <span class="history-label">Son çekilenler</span>
+          <span class="history-label" data-i18n="label.history">Son çekilenler</span>
           <div id="last-history" class="history-pills" aria-live="polite"></div>
         </div>
           <div style="margin:12px 0; text-align:left;">
-            <button id="btn-reset" class="btn btn-ghost">♻️ <span>Sıfırla</span></button>
+            <button id="btn-reset" class="btn btn-ghost">♻️ <span data-i18n="button.reset">Sıfırla</span></button>
           </div>
       </div>
       <div class="list-block" style="flex:1;">
-        <div class="list-head">Çıkan Sayılar</div>
-        <p class="list-info">Detaylı listeyi görmek için "Çekilen Sayılar" butonuna tıklayın.</p>
+        <div class="list-head" data-i18n="list.drawn.title">Çıkan Sayılar</div>
+        <p class="list-info" data-i18n="list.drawn.info">Detaylı listeyi görmek için "Çekilen Sayılar" butonuna tıklayın.</p>
       </div>
     </section>
 
@@ -62,32 +62,32 @@
       <div class="list-block">
   <div id="remaining-count" class="remaining-progress" aria-live="polite" data-total="90">
           <span class="remaining-value">90</span>
-          <small>Kalan numara</small>
+          <small data-i18n="summary.remaining">Kalan numara</small>
         </div>
-        <div class="list-head">Çekiliş Özeti</div>
-        <p class="list-info">Çekilen sayıları görmek için "Çekilen Sayılar", tabloyu görmek için "1-90 Tablosu" butonuna dokunun.</p>
+        <div class="list-head" data-i18n="summary.title">Çekiliş Özeti</div>
+        <p class="list-info" data-i18n="summary.info">Çekilen sayıları görmek için "Çekilen Sayılar", tabloyu görmek için "1-90 Tablosu" butonuna dokunun.</p>
       </div>
   <details open style="margin-top:24px;">
-        <summary>Ayarlar</summary>
+        <summary data-i18n="settings.title">Ayarlar</summary>
 
         <div class="row">
-          <label class="label">Dil (TTS)</label>
+          <label class="label" data-i18n="settings.tts">Dil (TTS)</label>
           <select id="opt-lang">
-            <option value="auto" selected>Otomatik (sistem)</option>
-            <option value="tr-TR">Türkçe</option>
-            <option value="en-US">English</option>
-            <option value="hi-IN">Hindi</option>
-            <option value="de-DE">Deutsch</option>
-            <option value="fr-FR">Français</option>
-            <option value="da-DK">Dansk</option>
+            <option value="auto" selected data-i18n="option.lang.auto">Otomatik (sistem)</option>
+            <option value="tr-TR" data-i18n="option.lang.tr">Türkçe</option>
+            <option value="en-US" data-i18n="option.lang.en">English</option>
+            <option value="hi-IN" data-i18n="option.lang.hi">Hindi</option>
+            <option value="de-DE" data-i18n="option.lang.de">Deutsch</option>
+            <option value="fr-FR" data-i18n="option.lang.fr">Français</option>
+            <option value="da-DK" data-i18n="option.lang.da">Dansk</option>
           </select>
         </div>
         
         <div style="margin-top:18px; text-align:center;">
-          <a href="pdf-generator.html" target="_blank" class="btn btn-primary" style="font-size:20pt; display:inline-block; text-decoration:none; color:white;">
+          <a href="pdf-generator.html" target="_blank" class="btn btn-primary" style="font-size:20pt; display:inline-block; text-decoration:none; color:white;" data-i18n="link.pdf">
             📄 PDF Kart Üretici
           </a>
-          <div style="font-size:13px; color:#666; margin-top:8px;">
+          <div style="font-size:13px; color:#666; margin-top:8px;" data-i18n="link.pdf.hint">
             Yeni sekmede mobil uyumlu PDF kartları üretin
           </div>
         </div>
@@ -205,16 +205,16 @@
   <div id="last-modal" class="modal" aria-hidden="true">
     <div class="modal-card modal-last" role="dialog" aria-modal="true" aria-labelledby="last-modal-title">
       <div class="modal-header">
-        <h3 id="last-modal-title">Son Çekilen Numara</h3>
+        <h3 id="last-modal-title" data-i18n="modal.last.title">Son Çekilen Numara</h3>
         <button type="button" id="btn-close-last" class="modal-close" aria-label="Kapat">&times;</button>
       </div>
       <div class="modal-body modal-body-last">
         <div id="last-modal-value" class="last-modal-number">–</div>
         <div class="last-modal-actions">
-          <button type="button" id="btn-last-reset" class="btn btn-ghost">♻️ <span>Sıfırla</span></button>
-          <button type="button" id="btn-last-auto-stop" class="btn btn-ghost">⏯️ <span>Devam</span></button>
-          <button type="button" id="btn-last-open-drawn" class="btn btn-ghost">📋 <span>Çekilen Sayılar</span></button>
-          <button type="button" id="btn-last-open-board" class="btn btn-ghost">📊 <span>1-90 Tablosu</span></button>
+          <button type="button" id="btn-last-reset" class="btn btn-ghost">♻️ <span data-i18n="button.reset">Sıfırla</span></button>
+          <button type="button" id="btn-last-auto-stop" class="btn btn-ghost">⏯️ <span data-i18n="button.resume">Devam</span></button>
+          <button type="button" id="btn-last-open-drawn" class="btn btn-ghost">📋 <span data-i18n="button.drawn">Çekilen Sayılar</span></button>
+          <button type="button" id="btn-last-open-board" class="btn btn-ghost">📊 <span data-i18n="button.board">1-90 Tablosu</span></button>
         </div>
       </div>
     </div>
@@ -223,13 +223,13 @@
   <div id="drawn-modal" class="modal" aria-hidden="true">
     <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="drawn-modal-title">
       <div class="modal-header">
-        <h3 id="drawn-modal-title">Çekilen Sayılar</h3>
+        <h3 id="drawn-modal-title" data-i18n="modal.drawn.title">Çekilen Sayılar</h3>
         <button type="button" id="btn-close-drawn" class="modal-close" aria-label="Kapat">&times;</button>
       </div>
-      <p class="modal-subtitle">En son çekilen sayılar en üstte görünür.</p>
+      <p class="modal-subtitle" data-i18n="modal.drawn.subtitle">En son çekilen sayılar en üstte görünür.</p>
       <div class="modal-body">
         <div class="modal-section">
-          <h4 class="modal-section-title">Çekilen Sayı Listesi</h4>
+          <h4 class="modal-section-title" data-i18n="modal.drawn.sectionTitle">Çekilen Sayı Listesi</h4>
           <div id="drawn-grid" class="box-grid"></div>
         </div>
       </div>
@@ -239,10 +239,10 @@
   <div id="board-modal" class="modal" aria-hidden="true">
     <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="board-modal-title">
       <div class="modal-header">
-        <h3 id="board-modal-title">1-90 Tablosu</h3>
+        <h3 id="board-modal-title" data-i18n="modal.board.title">1-90 Tablosu</h3>
         <button type="button" id="btn-close-board" class="modal-close" aria-label="Kapat">&times;</button>
       </div>
-      <p class="modal-subtitle">Çekilen sayılar, tabloda yeşil olarak işaretlenir.</p>
+      <p class="modal-subtitle" data-i18n="modal.board.subtitle">Çekilen sayılar, tabloda yeşil olarak işaretlenir.</p>
       <div class="modal-body">
         <div class="modal-section">
           <div id="board-90" class="board90"></div>
@@ -253,13 +253,13 @@
 
   <nav class="mobile-actions" aria-label="Hızlı işlemler">
     <button type="button" id="mobile-open-last" class="mobile-action-btn" aria-controls="last-modal">
-      🔢<span>Son</span>
+      🔢<span data-i18n="mobile.nav.last">Son</span>
     </button>
     <button type="button" id="mobile-open-drawn" class="mobile-action-btn" aria-controls="drawn-modal">
-      📋<span>Liste</span>
+      📋<span data-i18n="mobile.nav.drawn">Liste</span>
     </button>
     <button type="button" id="mobile-open-board" class="mobile-action-btn" aria-controls="board-modal">
-      📊<span>Tablo</span>
+      📊<span data-i18n="mobile.nav.board">Tablo</span>
     </button>
   </nav>
 

@@ -20,6 +20,7 @@
   const MAX_HISTORY = 6;
   const STORAGE_KEY = 'bingoStateV1';
   const BACKUP_KEY = 'bingoStateBackupV1';
+  const UI_LANG_KEY = 'bingoUiLang';
   let called = [];
   let autoCallTimer = null;
   let lastAutoCallInterval = 0;
@@ -29,13 +30,391 @@
   let reopenLastFrom = null;
   let switchingFromLast = false;
   let gameCompleted = false;
+  const fallbackUiLang = 'tr';
+  const translations = {
+    tr: {
+      'header.hero': 'BİNGOBALA "İster Tombala de İster Bingo"',
+      'button.call': 'Numara Çek',
+      'button.last': 'Son Numara',
+      'button.drawn': 'Çekilen Sayılar',
+      'button.board': '1-90 Tablosu',
+      'button.restore': 'Oyunu Geri Yükle',
+      'button.reset': 'Sıfırla',
+      'button.pause': 'Durdur',
+      'button.resume': 'Devam',
+      'label.autoCall': '⚙️ Otomatik Numara Çek:',
+      'option.auto.off': 'Kapalı',
+      'option.auto.3s': '3 saniye',
+      'option.auto.5s': '5 saniye',
+      'option.auto.10s': '10 saniye',
+      'status.auto': 'Otomatik',
+      'status.manual': 'Manuel',
+      'panel.draw.title': 'Çekiliş',
+      'label.history': 'Son çekilenler',
+      'list.drawn.title': 'Çıkan Sayılar',
+      'list.drawn.info': 'Detaylı listeyi görmek için "Çekilen Sayılar" butonuna tıklayın.',
+      'summary.remaining': 'Kalan numara',
+      'summary.title': 'Çekiliş Özeti',
+      'summary.info': 'Çekilen sayıları görmek için "Çekilen Sayılar", tabloyu görmek için "1-90 Tablosu" butonuna dokunun.',
+      'settings.title': 'Ayarlar',
+      'settings.tts': 'Dil (TTS)',
+      'option.lang.auto': 'Otomatik (sistem)',
+      'option.lang.tr': 'Türkçe',
+      'option.lang.en': 'English',
+      'option.lang.hi': 'Hindi',
+      'option.lang.de': 'Deutsch',
+      'option.lang.fr': 'Français',
+      'option.lang.da': 'Dansk',
+      'link.pdf': '📄 PDF Kart Üretici',
+      'link.pdf.hint': 'Yeni sekmede mobil uyumlu PDF kartları üretin',
+      'modal.last.title': 'Son Çekilen Numara',
+      'modal.drawn.title': 'Çekilen Sayılar',
+      'modal.drawn.subtitle': 'En son çekilen sayılar en üstte görünür.',
+      'modal.drawn.sectionTitle': 'Çekilen Sayı Listesi',
+      'modal.board.title': '1-90 Tablosu',
+      'modal.board.subtitle': 'Çekilen sayılar, tabloda yeşil olarak işaretlenir.',
+      'mobile.nav.last': 'Son',
+      'mobile.nav.drawn': 'Liste',
+      'mobile.nav.board': 'Tablo',
+      'history.empty': 'Henüz numara yok',
+      'aria.remaining': 'Kalan numara: {count}'
+    },
+    en: {
+      'header.hero': 'BINGOBALA "Call it Tombola or Bingo"',
+      'button.call': 'Draw Number',
+      'button.last': 'Last Number',
+      'button.drawn': 'Drawn Numbers',
+      'button.board': '1-90 Board',
+      'button.restore': 'Restore Game',
+      'button.reset': 'Reset',
+      'button.pause': 'Pause',
+      'button.resume': 'Resume',
+      'label.autoCall': '⚙️ Auto Draw:',
+      'option.auto.off': 'Off',
+      'option.auto.3s': 'Every 3 seconds',
+      'option.auto.5s': 'Every 5 seconds',
+      'option.auto.10s': 'Every 10 seconds',
+      'status.auto': 'Automatic',
+      'status.manual': 'Manual',
+      'panel.draw.title': 'Draw',
+      'label.history': 'Recent draws',
+      'list.drawn.title': 'Drawn Numbers',
+      'list.drawn.info': 'Tap "Drawn Numbers" to see the full list.',
+      'summary.remaining': 'Numbers left',
+      'summary.title': 'Draw Summary',
+      'summary.info': 'Tap "Drawn Numbers" for the list or "1-90 Board" for the board.',
+      'settings.title': 'Settings',
+      'settings.tts': 'Language (TTS)',
+      'option.lang.auto': 'Automatic (system)',
+      'option.lang.tr': 'Turkish',
+      'option.lang.en': 'English',
+      'option.lang.hi': 'Hindi',
+      'option.lang.de': 'German',
+      'option.lang.fr': 'French',
+      'option.lang.da': 'Danish',
+      'link.pdf': '📄 PDF Card Generator',
+      'link.pdf.hint': 'Open in a new tab to generate mobile-friendly PDF cards.',
+      'modal.last.title': 'Last Drawn Number',
+      'modal.drawn.title': 'Drawn Numbers',
+      'modal.drawn.subtitle': 'The latest numbers appear at the top.',
+      'modal.drawn.sectionTitle': 'Drawn Number List',
+      'modal.board.title': '1-90 Board',
+      'modal.board.subtitle': 'Drawn numbers are highlighted in green.',
+      'mobile.nav.last': 'Last',
+      'mobile.nav.drawn': 'List',
+      'mobile.nav.board': 'Board',
+      'history.empty': 'No numbers yet',
+      'aria.remaining': 'Remaining numbers: {count}'
+    },
+    de: {
+      'header.hero': 'BINGOBALA "Ob Tombola oder Bingo"',
+      'button.call': 'Zahl ziehen',
+      'button.last': 'Letzte Zahl',
+      'button.drawn': 'Gezogene Zahlen',
+      'button.board': '1-90 Tafel',
+      'button.restore': 'Spiel wiederherstellen',
+      'button.reset': 'Zurücksetzen',
+      'button.pause': 'Anhalten',
+      'button.resume': 'Fortsetzen',
+      'label.autoCall': '⚙️ Automatische Ziehung:',
+      'option.auto.off': 'Aus',
+      'option.auto.3s': 'Alle 3 Sekunden',
+      'option.auto.5s': 'Alle 5 Sekunden',
+      'option.auto.10s': 'Alle 10 Sekunden',
+      'status.auto': 'Automatisch',
+      'status.manual': 'Manuell',
+      'panel.draw.title': 'Ziehung',
+      'label.history': 'Letzte Zahlen',
+      'list.drawn.title': 'Gezogene Zahlen',
+      'list.drawn.info': 'Für die komplette Liste "Gezogene Zahlen" tippen.',
+      'summary.remaining': 'Verbleibende Zahl',
+      'summary.title': 'Ziehungsübersicht',
+      'summary.info': 'Liste über "Gezogene Zahlen", Tafel über "1-90 Tafel".',
+      'settings.title': 'Einstellungen',
+      'settings.tts': 'Sprache (TTS)',
+      'option.lang.auto': 'Automatisch (System)',
+      'option.lang.tr': 'Türkisch',
+      'option.lang.en': 'Englisch',
+      'option.lang.hi': 'Hindi',
+      'option.lang.de': 'Deutsch',
+      'option.lang.fr': 'Französisch',
+      'option.lang.da': 'Dänisch',
+      'link.pdf': '📄 PDF-Kartengenerator',
+      'link.pdf.hint': 'In neuem Tab öffnen, um mobilfreundliche PDF-Karten zu erstellen.',
+      'modal.last.title': 'Zuletzt gezogene Zahl',
+      'modal.drawn.title': 'Gezogene Zahlen',
+      'modal.drawn.subtitle': 'Die neuesten Zahlen stehen oben.',
+      'modal.drawn.sectionTitle': 'Liste der gezogenen Zahlen',
+      'modal.board.title': '1-90 Tafel',
+      'modal.board.subtitle': 'Gezogene Zahlen sind grün markiert.',
+      'mobile.nav.last': 'Letzte',
+      'mobile.nav.drawn': 'Liste',
+      'mobile.nav.board': 'Tafel',
+      'history.empty': 'Noch keine Zahlen',
+      'aria.remaining': 'Verbleibende Zahlen: {count}'
+    },
+    fr: {
+      'header.hero': 'BINGOBALA "Tombola ou Bingo"',
+      'button.call': 'Tirer un numéro',
+      'button.last': 'Dernier numéro',
+      'button.drawn': 'Numéros tirés',
+      'button.board': 'Tableau 1-90',
+      'button.restore': 'Restaurer la partie',
+      'button.reset': 'Réinitialiser',
+      'button.pause': 'Pause',
+      'button.resume': 'Reprendre',
+      'label.autoCall': '⚙️ Tirage automatique :',
+      'option.auto.off': 'Désactivé',
+      'option.auto.3s': 'Toutes les 3 secondes',
+      'option.auto.5s': 'Toutes les 5 secondes',
+      'option.auto.10s': 'Toutes les 10 secondes',
+      'status.auto': 'Automatique',
+      'status.manual': 'Manuel',
+      'panel.draw.title': 'Tirage',
+      'label.history': 'Derniers tirages',
+      'list.drawn.title': 'Numéros tirés',
+      'list.drawn.info': 'Touchez « Numéros tirés » pour la liste complète.',
+      'summary.remaining': 'Numéros restants',
+      'summary.title': 'Résumé du tirage',
+      'summary.info': 'Touchez « Numéros tirés » pour la liste ou « Tableau 1-90 » pour le tableau.',
+      'settings.title': 'Paramètres',
+      'settings.tts': 'Langue (TTS)',
+      'option.lang.auto': 'Automatique (système)',
+      'option.lang.tr': 'Turc',
+      'option.lang.en': 'Anglais',
+      'option.lang.hi': 'Hindi',
+      'option.lang.de': 'Allemand',
+      'option.lang.fr': 'Français',
+      'option.lang.da': 'Danois',
+      'link.pdf': '📄 Générateur de cartes PDF',
+      'link.pdf.hint': 'Ouvrez dans un nouvel onglet pour générer des cartes PDF mobiles.',
+      'modal.last.title': 'Dernier numéro tiré',
+      'modal.drawn.title': 'Numéros tirés',
+      'modal.drawn.subtitle': 'Les derniers numéros apparaissent en haut.',
+      'modal.drawn.sectionTitle': 'Liste des numéros tirés',
+      'modal.board.title': 'Tableau 1-90',
+      'modal.board.subtitle': 'Les numéros tirés sont surlignés en vert.',
+      'mobile.nav.last': 'Dernier',
+      'mobile.nav.drawn': 'Liste',
+      'mobile.nav.board': 'Tableau',
+      'history.empty': 'Aucun numéro pour le moment',
+      'aria.remaining': 'Numéros restants : {count}'
+    },
+    da: {
+      'header.hero': 'BINGOBALA "Kald det Tombola eller Bingo"',
+      'button.call': 'Træk et tal',
+      'button.last': 'Sidste tal',
+      'button.drawn': 'Trukne tal',
+      'button.board': '1-90 Tabel',
+      'button.restore': 'Gendan spil',
+      'button.reset': 'Nulstil',
+      'button.pause': 'Pause',
+      'button.resume': 'Fortsæt',
+      'label.autoCall': '⚙️ Automatisk trækning:',
+      'option.auto.off': 'Fra',
+      'option.auto.3s': 'Hver 3. sekund',
+      'option.auto.5s': 'Hver 5. sekund',
+      'option.auto.10s': 'Hver 10. sekund',
+      'status.auto': 'Automatisk',
+      'status.manual': 'Manuel',
+      'panel.draw.title': 'Trækning',
+      'label.history': 'Seneste tal',
+      'list.drawn.title': 'Trukne tal',
+      'list.drawn.info': 'Tryk på "Trukne tal" for hele listen.',
+      'summary.remaining': 'Tilbageværende tal',
+      'summary.title': 'Trækningsoversigt',
+      'summary.info': 'Tryk på "Trukne tal" for listen eller "1-90 Tabel" for tabellen.',
+      'settings.title': 'Indstillinger',
+      'settings.tts': 'Sprog (TTS)',
+      'option.lang.auto': 'Automatisk (system)',
+      'option.lang.tr': 'Tyrkisk',
+      'option.lang.en': 'Engelsk',
+      'option.lang.hi': 'Hindi',
+      'option.lang.de': 'Tysk',
+      'option.lang.fr': 'Fransk',
+      'option.lang.da': 'Dansk',
+      'link.pdf': '📄 PDF-kortgenerator',
+      'link.pdf.hint': 'Åbn i en ny fane for at lave mobilvenlige PDF-kort.',
+      'modal.last.title': 'Sidste trukne tal',
+      'modal.drawn.title': 'Trukne tal',
+      'modal.drawn.subtitle': 'De nyeste tal vises øverst.',
+      'modal.drawn.sectionTitle': 'Liste over trukne tal',
+      'modal.board.title': '1-90 Tabel',
+      'modal.board.subtitle': 'Trukne tal markeres med grønt.',
+      'mobile.nav.last': 'Sidste',
+      'mobile.nav.drawn': 'Liste',
+      'mobile.nav.board': 'Tabel',
+      'history.empty': 'Ingen tal endnu',
+      'aria.remaining': 'Tilbageværende tal: {count}'
+    },
+    hi: {
+      'header.hero': 'बिंगोबाला "चाहे टोम्बोला कहें या बिंगो"',
+      'button.call': 'नंबर निकालें',
+      'button.last': 'अंतिम नंबर',
+      'button.drawn': 'निकले हुए नंबर',
+      'button.board': '1-90 तालिका',
+      'button.restore': 'खेल पुनर्स्थापित करें',
+      'button.reset': 'रीसेट',
+      'button.pause': 'रोकें',
+      'button.resume': 'जारी रखें',
+      'label.autoCall': '⚙️ स्वचालित ड्रॉ:',
+      'option.auto.off': 'बंद',
+      'option.auto.3s': 'हर 3 सेकंड',
+      'option.auto.5s': 'हर 5 सेकंड',
+      'option.auto.10s': 'हर 10 सेकंड',
+      'status.auto': 'स्वचालित',
+      'status.manual': 'मैनुअल',
+      'panel.draw.title': 'ड्रॉ',
+      'label.history': 'ताज़ा नंबर',
+      'list.drawn.title': 'निकले हुए नंबर',
+      'list.drawn.info': 'पूरी सूची के लिए "निकले हुए नंबर" पर टैप करें।',
+      'summary.remaining': 'शेष नंबर',
+      'summary.title': 'ड्रॉ सारांश',
+      'summary.info': 'सूची के लिए "निकले हुए नंबर" और तालिका के लिए "1-90 तालिका" पर टैप करें।',
+      'settings.title': 'सेटिंग्स',
+      'settings.tts': 'भाषा (TTS)',
+      'option.lang.auto': 'स्वचालित (सिस्टम)',
+      'option.lang.tr': 'तुर्की',
+      'option.lang.en': 'अंग्रेज़ी',
+      'option.lang.hi': 'हिंदी',
+      'option.lang.de': 'जर्मन',
+      'option.lang.fr': 'फ्रेंच',
+      'option.lang.da': 'डेनिश',
+      'link.pdf': '📄 PDF कार्ड जनरेटर',
+      'link.pdf.hint': 'मोबाइल-फ्रेंडली PDF कार्ड बनाने के लिए नई टैब में खोलें।',
+      'modal.last.title': 'आखिरी निकला नंबर',
+      'modal.drawn.title': 'निकले हुए नंबर',
+      'modal.drawn.subtitle': 'नए नंबर ऊपर दिखाई देंगे।',
+      'modal.drawn.sectionTitle': 'निकले हुए नंबरों की सूची',
+      'modal.board.title': '1-90 तालिका',
+      'modal.board.subtitle': 'निकले हुए नंबर हरे रंग से हाइलाइट होंगे।',
+      'mobile.nav.last': 'अंतिम',
+      'mobile.nav.drawn': 'सूची',
+      'mobile.nav.board': 'तालिका',
+      'history.empty': 'अभी कोई नंबर नहीं',
+      'aria.remaining': 'शेष नंबर: {count}'
+    }
+  };
+  let currentUiLang = fallbackUiLang;
 
   const ready = fn => (document.readyState==='loading' ? document.addEventListener('DOMContentLoaded', fn) : fn());
   ready(init);
 
+  function translate(key, fallback = ''){
+    const langDict = translations[currentUiLang] || translations[fallbackUiLang] || {};
+    if(Object.prototype.hasOwnProperty.call(langDict, key)) return langDict[key];
+    const fallbackDict = translations[fallbackUiLang] || {};
+    if(Object.prototype.hasOwnProperty.call(fallbackDict, key)) return fallbackDict[key];
+    return fallback;
+  }
+
+  function formatMessage(key, replacements = {}, fallback = ''){
+    const template = translate(key, fallback);
+    if(!template) return template;
+    return template.replace(/\{(\w+)\}/g, function(match, token){
+      if(Object.prototype.hasOwnProperty.call(replacements, token)) {
+        return replacements[token];
+      }
+      return match;
+    });
+  }
+
+  function applyTranslations(){
+    const nodes = document.querySelectorAll('[data-i18n]');
+    nodes.forEach(function(el){
+      const key = el.getAttribute('data-i18n');
+      if(!key) return;
+      const fallback = el.getAttribute('data-i18n-default') || el.textContent;
+      const allowHtml = el.hasAttribute('data-i18n-html');
+      const value = translate(key, fallback);
+      if(value == null) return;
+      if(allowHtml) el.innerHTML = value;
+      else el.textContent = value;
+    });
+  }
+
+  function getStoredUiLanguage(){
+    const store = getStorage();
+    if(!store) return null;
+    try {
+      const saved = store.getItem(UI_LANG_KEY);
+      if(saved && translations[saved]) return saved;
+    } catch(_) {
+      return null;
+    }
+    return null;
+  }
+
+  function saveUiLanguage(lang){
+    const store = getStorage();
+    if(!store) return;
+    try {
+      store.setItem(UI_LANG_KEY, lang);
+    } catch(_) {
+      /* ignore storage issues */
+    }
+  }
+
+  function clearStoredUiLanguage(){
+    const store = getStorage();
+    if(!store) return;
+    try {
+      store.removeItem(UI_LANG_KEY);
+    } catch(_) {
+      /* ignore storage issues */
+    }
+  }
+
+  function detectUiLanguage(){
+    const stored = getStoredUiLanguage();
+    if(stored) return stored;
+    const nav = (navigator.language || fallbackUiLang).split('-')[0].toLowerCase();
+    if(translations[nav]) return nav;
+    return nav === 'tr' ? 'tr' : 'en';
+  }
+
+  function setUiLanguage(lang, options = {}){
+    const persist = options.persist !== undefined ? options.persist : true;
+    const clearStored = options.clearStored === true;
+    if(!lang) lang = fallbackUiLang;
+    const normalized = lang.toLowerCase();
+    currentUiLang = translations[normalized] ? normalized : fallbackUiLang;
+    if(document && document.documentElement){
+      document.documentElement.lang = currentUiLang;
+    }
+    if(persist) saveUiLanguage(currentUiLang);
+    else if(clearStored) clearStoredUiLanguage();
+    applyTranslations();
+    renderLastHistory();
+    updateRemainingProgress();
+    setAutoIndicator(!!autoCallTimer);
+    setAutoStopLabel(!!autoCallTimer);
+  }
+
   function init(){
     console.log('🚀 BingoBala başlatılıyor...');
     detectCountryAndSetTTS();
+    setUiLanguage(detectUiLanguage(), { persist: false });
     buildBoard();
     const restored = loadState();
     if(!restored) {
@@ -74,6 +453,7 @@
     const autoSelect = document.getElementById('auto-call-select');
     const autoStop = document.getElementById('btn-auto-call-stop');
     const btnRestore = document.getElementById('btn-restore-game');
+    const langSelect = document.getElementById('opt-lang');
     const btnOpenLast = document.getElementById('btn-open-last');
     const btnCloseLast = document.getElementById('btn-close-last');
     const btnLastOpenDrawn = document.getElementById('btn-last-open-drawn');
@@ -91,6 +471,7 @@
       autoSelect: !!autoSelect,
       autoStop: !!autoStop,
       btnRestore: !!btnRestore,
+      langSelect: !!langSelect,
       btnOpenLast: !!btnOpenLast,
       btnCloseLast: !!btnCloseLast,
       btnLastOpenDrawn: !!btnLastOpenDrawn,
@@ -181,6 +562,11 @@
         const selectVal = autoSelect ? parseInt(autoSelect.value, 10) : 0;
         const interval = lastAutoCallInterval || selectVal || 3;
         startAutoCall(interval);
+        if(autoSelect) {
+          const normalized = String(interval);
+          const hasOption = Array.from(autoSelect.options || []).some(opt => opt.value === normalized);
+          if(hasOption) autoSelect.value = normalized;
+        }
       } else {
         stopAutoCall();
         saveState();
@@ -188,6 +574,20 @@
     };
 
     if(autoStop) autoStop.addEventListener('click', toggleAutoCall);
+
+    if(langSelect){
+      langSelect.addEventListener('change', function(){
+        const val = langSelect.value;
+        if(val === 'auto') {
+          clearStoredUiLanguage();
+          const autoLang = detectUiLanguage();
+          setUiLanguage(autoLang, { persist: false });
+        } else {
+          const base = (val || '').split('-')[0].toLowerCase();
+          if(translations[base]) setUiLanguage(base);
+        }
+      });
+    }
 
     if(btnRestore) btnRestore.addEventListener('click', function(){
       if(restoreFromBackup()) {
@@ -260,7 +660,9 @@
 
   function setAutoIndicator(isActive){
     if(!autoIndicatorEl) return;
-    autoIndicatorEl.textContent = isActive ? 'Otomatik' : 'Manuel';
+    const key = isActive ? 'status.auto' : 'status.manual';
+    autoIndicatorEl.setAttribute('data-i18n', key);
+    autoIndicatorEl.textContent = translate(key, isActive ? 'Otomatik' : 'Manuel');
     autoIndicatorEl.classList.toggle('active', !!isActive);
   }
 
@@ -275,10 +677,17 @@
   }
 
   function setAutoStopLabel(isRunning){
-    const btn = document.getElementById('btn-auto-call-stop');
-    const modalBtn = document.getElementById('btn-last-auto-stop');
-    if(btn) btn.innerHTML = isRunning ? '⏸️ <span>Durdur</span>' : '⏯️ <span>Devam</span>';
-    if(modalBtn) modalBtn.innerHTML = isRunning ? '⏸️ <span>Durdur</span>' : '⏯️ <span>Devam</span>';
+    const buttons = [
+      document.getElementById('btn-auto-call-stop'),
+      document.getElementById('btn-last-auto-stop')
+    ];
+    const labelKey = isRunning ? 'button.pause' : 'button.resume';
+    const label = translate(labelKey, isRunning ? 'Durdur' : 'Devam');
+    const icon = isRunning ? '⏸️' : '⏯️';
+    buttons.forEach(function(btn){
+      if(!btn) return;
+      btn.innerHTML = icon + ' <span data-i18n="' + labelKey + '">' + label + '</span>';
+    });
   }
 
   function handleResetClick(){
@@ -460,7 +869,7 @@
     if(!recent.length){
       const placeholder = document.createElement('span');
       placeholder.className = 'history-placeholder';
-      placeholder.textContent = 'Henüz numara yok';
+      placeholder.textContent = translate('history.empty', 'Henüz numara yok');
       lastHistoryEl.appendChild(placeholder);
       return;
     }
@@ -480,7 +889,8 @@
     remainingCountEl.setAttribute('data-total', TOTAL_NUMBERS);
     const valueEl = remainingCountEl.querySelector('.remaining-value');
     if(valueEl) valueEl.textContent = remaining;
-    remainingCountEl.setAttribute('aria-label', `Kalan numara: ${remaining}`);
+    const ariaLabel = formatMessage('aria.remaining', { count: remaining }, `Kalan numara: ${remaining}`);
+    remainingCountEl.setAttribute('aria-label', ariaLabel);
   }
 
   function updateLastNumberDisplay(value, options = {}){
@@ -739,6 +1149,12 @@
     stopAutoCall(true, true);
     if (intervalSec > 0) {
       lastAutoCallInterval = intervalSec;
+      const dropdown = document.getElementById('auto-call-select');
+      if(dropdown){
+        const normalized = String(intervalSec);
+        const hasOption = Array.from(dropdown.options || []).some(opt => opt.value === normalized);
+        if(hasOption) dropdown.value = normalized;
+      }
       autoCallTimer = setInterval(() => {
         // TTS okuma sırasında numara çekme
         if (!isReading && called.length < TOTAL_NUMBERS) {
