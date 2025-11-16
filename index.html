@@ -17,190 +17,183 @@
      crossorigin="anonymous"></script>
 </head>
 <body>
-  
-  <header class="topbar">
-    <h1 data-i18n="header.hero">BİNGOBALA "İster Tombala de İster Bingo"</h1>
-      <div class="actions">
-        <button id="btn-call" class="btn btn-large">🎲 <span data-i18n="button.call">Numara Çek</span></button>
-        <button id="btn-open-last" class="btn btn-ghost">🔢 <span data-i18n="button.last">Son Numara</span></button>
-        <button id="btn-open-drawn" class="btn btn-ghost">📋 <span data-i18n="button.drawn">Çekilen Sayılar</span></button>
-        <button id="btn-open-board" class="btn btn-ghost">📊 <span data-i18n="button.board">1-90 Tablosu</span></button>
-        <button id="btn-restore-game" class="btn btn-ghost" style="display:none;">⏪ <span data-i18n="button.restore">Oyunu Geri Yükle</span></button>
+  <div class="app-shell">
+    <header class="app-header panel">
+      <div class="brand-block">
+        <div class="brand-mark">🎉</div>
+        <div>
+          <h1 class="brand-title" data-i18n="header.hero">BİNGOBALA "İster Tombala de İster Bingo"</h1>
+          <p class="brand-sub">Ödül PDF'leri oluşturup sesli tombala çekilişini tek panelden yönetin.</p>
+        </div>
       </div>
-      <div style="margin-top:16px; text-align:left;">
-        <label for="auto-call-select" class="label-inline" data-i18n="label.autoCall">⚙️ Otomatik Numara Çek:</label>
-        <select id="auto-call-select" class="control-inline">
-          <option value="0" data-i18n="option.auto.off">Kapalı</option>
-          <option value="3" data-i18n="option.auto.3s">3 saniye</option>
-          <option value="5" data-i18n="option.auto.5s">5 saniye</option>
-          <option value="10" data-i18n="option.auto.10s">10 saniye</option>
-        </select>
-  <button id="btn-auto-call-stop" class="btn btn-ghost control-inline">⏯️ <span data-i18n="button.resume">Devam</span></button>
+      <div class="header-status">
+        <div class="status-pill">
+          <span>🔔</span>
+          <strong data-i18n="summary.remaining">Kalan numara</strong>
+          <span id="remaining-count" class="remaining-pill" aria-live="polite" data-total="90">
+            <span class="remaining-value">90</span>
+          </span>
+        </div>
+        <div class="status-pill">
+          <span>⚙️</span>
+          <label for="auto-call-select" class="status-label" data-i18n="label.autoCall">Otomatik Numara Çek</label>
+          <select id="auto-call-select" class="status-select">
+            <option value="0" data-i18n="option.auto.off">Kapalı</option>
+            <option value="3" data-i18n="option.auto.3s">3 saniye</option>
+            <option value="5" data-i18n="option.auto.5s">5 saniye</option>
+            <option value="10" data-i18n="option.auto.10s">10 saniye</option>
+          </select>
+          <button id="btn-auto-call-stop" class="btn btn-ghost compact">⏯️ <span data-i18n="button.resume">Devam</span></button>
+        </div>
         <span id="auto-indicator" class="auto-indicator" aria-live="polite" data-i18n="status.manual">Manuel</span>
       </div>
-  </header>
+      <div class="header-actions">
+        <button id="btn-open-last" class="btn btn-ghost">🔢 <span data-i18n="button.last">Son Numara</span></button>
+        <button id="btn-open-drawn" class="btn btn-ghost">📋 <span data-i18n="button.drawn">Çekilen Sayılar</span></button>
+        <button id="btn-open-board" class="btn btn-ghost">📊 <span data-i18n="button.board">Kontrol Tablosu</span></button>
+        <button id="btn-restore-game" class="btn btn-ghost" style="display:none;">⏪ <span data-i18n="button.restore">Oyunu Geri Yükle</span></button>
+      </div>
+    </header>
 
-    <section class="panel" id="caller" style="display:flex; gap:32px; align-items:flex-start;">
-      <div style="min-width:120px;">
-        <h3 data-i18n="panel.draw.title">Çekiliş</h3>
-        <div id="last-number" class="last-number">–</div>
-        <div class="last-history">
-          <span class="history-label" data-i18n="label.history">Son çekilenler</span>
+    <main class="app-main">
+      <section class="panel game-panel">
+        <header class="panel-head">
+          <div class="panel-meta">
+            <span class="pill meta-pill" data-i18n="panel.draw.title">Çekiliş</span>
+            <span class="pill meta-pill">🎧 TTS Açık</span>
+          </div>
+          <button id="btn-reset" class="btn btn-ghost">♻️ <span data-i18n="button.reset">Sıfırla</span></button>
+        </header>
+        <div class="last-number-card">
+          <div id="last-number" class="last-number">–</div>
+          <div class="last-number-actions">
+            <button id="btn-call" class="btn btn-large primary">🎲 <span data-i18n="button.call">Numara Çek</span></button>
+            <button class="btn btn-ghost" id="mobile-open-last">🔍 <span data-i18n="button.last">Son Numara</span></button>
+          </div>
+        </div>
+        <div class="history-card">
+          <div class="history-header">
+            <span class="history-label" data-i18n="label.history">Son çekilenler</span>
+            <span class="history-hint">Swipe →</span>
+          </div>
           <div id="last-history" class="history-pills" aria-live="polite"></div>
         </div>
-          <div style="margin:12px 0; text-align:left;">
-            <button id="btn-reset" class="btn btn-ghost">♻️ <span data-i18n="button.reset">Sıfırla</span></button>
+        <div class="board-preview">
+          <div class="board-preview-head">
+            <h3 data-i18n="list.drawn.title">Çıkan Sayılar</h3>
+            <button id="mobile-open-drawn" class="btn btn-ghost compact">📋 <span data-i18n="button.drawn">Çekilen Sayılar</span></button>
           </div>
-      </div>
-      <div class="list-block" style="flex:1;">
-        <div class="list-head" data-i18n="list.drawn.title">Çıkan Sayılar</div>
-        <p class="list-info" data-i18n="list.drawn.info">Detaylı listeyi görmek için "Çekilen Sayılar" butonuna tıklayın.</p>
-      </div>
-    </section>
-
-    <section class="panel">
-      <div class="list-block">
-  <div id="remaining-count" class="remaining-progress" aria-live="polite" data-total="90">
-          <span class="remaining-value">90</span>
-          <small data-i18n="summary.remaining">Kalan numara</small>
-        </div>
-        <div class="list-head" data-i18n="summary.title">Çekiliş Özeti</div>
-        <p class="list-info" data-i18n="summary.info">Çekilen sayıları görmek için "Çekilen Sayılar", tabloyu görmek için "1-90 Tablosu" butonuna dokunun.</p>
-      </div>
-  <details open style="margin-top:24px;">
-        <summary data-i18n="settings.title">Ayarlar</summary>
-
-        <div class="row">
-          <label class="label" data-i18n="settings.tts">Dil (TTS)</label>
-          <select id="opt-lang">
-            <option value="auto" selected data-i18n="option.lang.auto">Otomatik (sistem)</option>
-            <option value="tr-TR" data-i18n="option.lang.tr">Türkçe</option>
-            <option value="en-US" data-i18n="option.lang.en">English</option>
-            <option value="hi-IN" data-i18n="option.lang.hi">Hindi</option>
-            <option value="de-DE" data-i18n="option.lang.de">Deutsch</option>
-            <option value="fr-FR" data-i18n="option.lang.fr">Français</option>
-            <option value="da-DK" data-i18n="option.lang.da">Dansk</option>
-          </select>
-        </div>
-        
-        <div style="margin-top:18px; text-align:center;">
-          <a href="pdf-generator.html" target="_blank" class="btn btn-primary" style="font-size:20pt; display:inline-block; text-decoration:none; color:white;" data-i18n="link.pdf">
-            📄 PDF Kart Üretici
-          </a>
-          <div style="font-size:13px; color:#666; margin-top:8px;" data-i18n="link.pdf.hint">
-            Yeni sekmede mobil uyumlu PDF kartları üretin
+          <div class="board-preview-body">
+            <div class="board-preview-list" id="drawn-preview" aria-live="polite"></div>
           </div>
         </div>
-      </details>
-    </section>
-  </main>
-<h1>BingoBala Nedir?</h1>
-  <p>BingoBala, klasik tombala oyununun birleştirilmesiyle oluşmuştur. Bu sayfa da yapabilecekleriniz: Yazdırılabilir 90 Balls Bingo kartları oluşturabilir. Başlık yazılarını istediğiniz şekilde değiştirebilirsiniz.</p>
-  <p>BingoBala, Ayrıca size bingo numara oluşturucusu da sunmaktadır. Çekilen numaralar otomatik olarak listeye işlenir. Kendi özel numara setlerinizi oluşturabilirsiniz. Çıkan sayıları sıralı bir şekilde görüntüleyebilirsiniz.</p>
-  <h2>Nasıl Kullanılır?</h2>
-  <ul>
-    <li>Ayarlardan band rengi ve yazı rengini seçin.</li>
-    <li>Seri No ve Sayfa Sayısını belirleyin.</li>
-    <li>Hazır bir preset seçin veya özel metin girin.</li>
-    <li>Pdf üret e tıklayın ve dosyanız yüklensin</li>
-  </ul>
-    <h2>Yasal Uyarı</h2>
-  <p>Bu oyun herhangi bir kumar unsuru içermez.</p>
+      </section>
 
-  <main class="container">
-    <section class="info-panel" style="margin-bottom:24px; background:#fffbe7; border-radius:8px; padding:20px; box-shadow:0 2px 8px #0001;">
-      <div style="margin:24px 0; text-align:center;">
-        <h2>BingoBala QR Kodu</h2>
-        <div id="qr-code" style="display:inline-block; padding:8px; background:#fff; border-radius:8px; box-shadow:0 2px 8px #0002;"></div>
-        <div style="font-size:0.95em; color:#555; margin-top:8px;">Uygulamayı hızlıca açmak için QR kodu okutun.</div>
-      </div>
-      <div style="margin:32px 0; text-align:left; background:#f8f8ff; border-radius:8px; padding:18px; box-shadow:0 1px 4px #0001;">
-        <h2>Kullanım Talimatları & Oyun Kuralları</h2>
-        <ol style="font-size:1.08em; line-height:1.7;">
-          <li>En az iki oyuncuyla oynanabilir, kalabalık ortamlarda çok daha eğlenceli hale gelir.</li>
-          <li> Kartlar PDF çıktısı olarak alınabilir.İster yazdırılabilir ister dijital ortamda kullanılabilir.</li>
-          <li>Kartları işaretlemek için en keyiflisi dot marker kalemlerdir:Ancak; <b>keçeli kalem, fosforlu kalem, tükenmez kalem</b> veya <b>kurşun kalem</b> kullanılabilir. Renkli kalemler önerilir.</li>
-          <li>"Numara Çek" butonuna tıklanarak rastgele bir sayı çekilir ve sesli olarak okunur.</li>
-          <li>Yatay aynı hizada ki 3 satırdan herhangi birinde 5 numarayı ilk tamamlayan 1. Çinko yapar, Kartta Yatay aynı hizada 10 numarayı ilk tamamlayan 2. Çinko Yapar.Tüm kartı yani 15 numarayı ilk tamamlayan oyuncu "Bingo" diyerek oyunu kazanır.</li>
-          <li> Tombala yada Bingo yapıldıktan sonra:Sıfırla Düğmesine basarak oyunu yeniden başlatabilirsiniz.</li>
+      <aside class="side-column">
+        <section class="panel reward-panel">
+          <header class="panel-head">
+            <span class="pill meta-pill">📄 Ödül PDF</span>
+            <span class="reward-meta">Hazır şablonla saniyeler içinde çıktı alın.</span>
+          </header>
+          <div class="reward-body">
+            <h2>Ödül Kartı Üreticisi</h2>
+            <p>Etkinlikleriniz için ödül kartlarını PDF formatında hazırlayın ve anında paylaşın.</p>
+            <a class="btn btn-large primary" href="pdf-generator.html" target="_blank" rel="noopener">📄 PDF Kart Üret</a>
+            <small>Yeni sekmede açılır; taslaklar cihazınızda saklanır.</small>
+          </div>
+        </section>
 
-        </ol>
-        <h3>Yasal Uyarı</h3>
-        <p>Bu uygulama yalnızca eğlence ve sosyal etkinlik amaçlıdır. Herhangi bir kumar, bahis veya maddi ödül unsuru içermez. Kartlar ve çekilişler tamamen dijital ve offline olarak çalışır. Kullanıcı verisi toplanmaz. AdSense ve yerel yasalara uygundur.</p>
-      </div>
-      <div style="margin:24px 0; text-align:center;">
-        <h2>Örnek Bingo Kartları</h2>
-        <img src="assets/image-1756416474625.png" alt="Örnek Bingo Kartı 1" style="max-width:45%; margin:8px; border-radius:8px; box-shadow:0 2px 8px #0002;">
-        <img src="assets/image-1756416518551.png" alt="Örnek Etiketli Bingo Kartı 2" style="max-width:45%; margin:8px; border-radius:8px; box-shadow:0 2px 8px #0002;">
-      </div>
-      <header>
-        <h1>BingoBala - Dijital Bingo ve Çekiliş Uygulaması</h1>
-      </header>
-      <article>
-        <p><strong>BingoBala</strong>, klasik tombala ve bingo oyununu dijitalleştirerek, 90 toplu çekilişler için modern bir çözüm sunar. Numara çekme, sesli okuma (TTS), PDF kart üretimi ve çekiliş takibi gibi özelliklerle hem eğlenceli hem de pratik bir deneyim sağlar.</p>
-        <nav style="margin-top:18px;">
-          <strong>Diğer Uygulamalar ve Ana Sayfa:</strong>
-          <ul style="margin:8px 0 0 0; padding:0; list-style:none;">
-            <li><a href="https://sonsuzyasam.github.io/" target="_blank" rel="noopener">sonsuzyasam.github.io (Ana Sayfa)</a></li>
-            <li><a href="https://sonsuzyasam.github.io/taksi-hesaplama/" target="_blank" rel="noopener">Taksi Hesaplama</a></li>
-            <li><a href="https://sonsuzyasam.github.io/Word-BingoBala/" target="_blank" rel="noopener">Word BingoBala</a></li>
-          </ul>
-        </nav>
-        <h2>Özellikler</h2>
-        <ul>
-          <li>Dijital bingo panosu ve otomatik işaretleme</li>
-          <li>Sesli numara okuma (TTS) desteği</li>
-          <li>PDF kart üretimi ve kişiselleştirme</li>
-          <li>Offline ve güvenli kullanım</li>
-          <li>Mobil uyumlu arayüz</li>
-        </ul>
-        <h2>Kullanım Alanları</h2>
-        <ul>
-          <li>Okullar ve eğitim kurumları</li>
-          <li>Dernekler, vakıflar ve sosyal gruplar</li>
-          <li>Aile içi eğlence ve ev partileri</li>
-          <li>Online veya fiziksel etkinlikler</li>
-        </ul>
-        <h2>Nasıl Kullanılır?</h2>
-        <ol>
-          <li>Band rengi, yazı rengi, seri no ve sayfa sayısı gibi ayarları yapın.</li>
-          <li>Hazır bir preset seçin veya özel metin girin.</li>
-          <li>"Numara Çek (TTS)" butonuna tıklayın, çekilen sayılar otomatik işaretlenir ve sesli okunur.</li>
-          <li>PDF kart üretmek için ilgili butonu kullanın.</li>
-        </ol>
-        <h2>Avantajları</h2>
-        <ul>
-          <li>Ücretsiz ve offline çalışır</li>
-          <li>Kişisel veri toplamaz</li>
-        <p>BingoBala,Ya da Tombala 90 toplu klasik Bingo Tombala oyunu ve çekilişler için geliştirilmiş, tamamen tarayıcıda çalışan bir dijital uygulamadır. Modern web teknolojileriyle hazırlanmış bu araç, hem eğlenceli hem de pratik bir çekiliş deneyimi sunar.</p>
+        <section class="panel live-stats">
+          <header class="panel-head">
+            <span class="pill meta-pill" data-i18n="panel.control.title">📊 Kontrol Tablosu</span>
+            <button id="mobile-open-board" class="btn btn-ghost compact">🔍 <span data-i18n="button.board">Kontrol Tablosu</span></button>
+          </header>
+          <div class="board-wrapper">
+            <div id="board-90" class="board90" aria-label="90 numaralık kontrol tablosu"></div>
+          </div>
+        </section>
 
+        <section class="panel tts-panel">
+          <header class="panel-head">
+            <span class="pill meta-pill">🎧 Ses &amp; Dil</span>
+          </header>
+          <div class="tts-body">
+            <label for="opt-lang" data-i18n="settings.tts">Dil (TTS)</label>
+            <select id="opt-lang" class="tts-select">
+              <option value="auto" data-i18n="option.lang.auto">Otomatik (sistem)</option>
+              <option value="tr-TR" data-i18n="option.lang.tr">Türkçe</option>
+              <option value="en-US" data-i18n="option.lang.en">English</option>
+              <option value="hi-IN" data-i18n="option.lang.hi">Hindi</option>
+              <option value="de-DE" data-i18n="option.lang.de">Deutsch</option>
+              <option value="fr-FR" data-i18n="option.lang.fr">Français</option>
+              <option value="da-DK" data-i18n="option.lang.da">Dansk</option>
+            </select>
+            <p class="tts-hint">Numaralar TTS ile otomatik okunur; tercih ettiğiniz dili buradan seçebilirsiniz.</p>
+          </div>
+        </section>
+      </aside>
+    </main>
 
-        </ul>
-        <h2>Yasal Uyarı</h2>
-        <p>Bu uygulama herhangi bir kumar unsuru içermez. Tüm içerikler yerel yasalara uygun şekilde düzenlenmiştir.</p>
+    <section class="info-section">
+      <article class="panel info-card">
+        <h2>BingoBala Hakkında</h2>
+        <p><strong>BingoBala</strong>, fiziksel etkinlikler ve okul organizasyonları için sesli tombala asistanı ile ödül kartı üretimini tek yerde toplar. İnternete gerek kalmadan sayılar çekilir, katılımcılar PDF kartları hızlıca alır.</p>
+        <div class="info-grid">
+          <div>
+            <h3>Öne Çıkanlar</h3>
+            <ul>
+              <li>Manuel veya otomatik numara çekimi ve sesli okuma</li>
+              <li>90 toplu pano ile anında işaretleme</li>
+              <li>Ödül kartlarını PDF olarak hazırlama</li>
+              <li>Mobil uyumlu arayüz ve QR ile hızlı paylaşım</li>
+            </ul>
+          </div>
+          <div>
+            <h3>Kullanım Alanları</h3>
+            <ul>
+              <li>Okul ve kulüp etkinlikleri</li>
+              <li>Aile/arkadaş buluşmaları</li>
+              <li>Kurumsal motivasyon toplantıları</li>
+              <li>Hediye ve ödül dağıtımları</li>
+            </ul>
+          </div>
+        </div>
+        <div class="pdf-cta">
+          <a href="pdf-generator.html" target="_blank" class="btn btn-large primary" data-i18n="link.pdf">📄 PDF Kart Üretici</a>
+          <p data-i18n="link.pdf.hint">Yeni sekmede mobil uyumlu PDF kartları üretin.</p>
+        </div>
       </article>
+
+      <section class="panel qr-card">
+        <h2>Hızlı Katılım QR Kodu</h2>
+        <div id="qr-code" class="qr-box"></div>
+        <p>Katılımcılar QR kodu okutarak oyuna hızla bağlanabilir.</p>
+      </section>
     </section>
-  <footer class="footer">
-    <small>© BingoBala— Offline çalışır, veri toplamaz.</small>
-      <small>© BingoBala — Offline çalışır, veri toplamaz.<br>
-        <a href="https://sonsuzyasam.github.io/" target="_blank" rel="noopener">Ana Sayfa</a> |
+
+    <footer class="app-footer panel">
+      <div>
+        <small>© BingoBala — Sesli tombala ve ödül PDF üretimi yardımcınız.</small>
+      </div>
+      <nav class="footer-links">
+        <a href="https://sonsuzyasam.github.io/" target="_blank" rel="noopener">Ana Sayfa</a>
         <a href="https://sonsuzyasam.github.io/taksi-hesaplama/" target="_blank" rel="noopener">Taksi Hesaplama</a>
         <a href="https://sonsuzyasam.github.io/Word-BingoBala/" target="_blank" rel="noopener">Word BingoBala</a>
+      </nav>
+    </footer>
+  </div>
 
-      </small>
-    
-    <div style="margin-top:16px; text-align:center;">
-      <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7309845525285029"
-        crossorigin="anonymous"></script>
-      <ins class="adsbygoogle"
-        style="display:block; text-align:center;"
-        data-ad-client="ca-pub-7309845525285029"
-        data-ad-slot="1234567890"
-        data-ad-format="auto"
-        data-full-width-responsive="true"></ins>
-      <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
-    </div>
-  </footer>
+  <div class="ad-slot">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7309845525285029"
+      crossorigin="anonymous"></script>
+    <ins class="adsbygoogle"
+      style="display:block"
+      data-ad-client="ca-pub-7309845525285029"
+      data-ad-slot="1234567890"
+      data-ad-format="auto"
+      data-full-width-responsive="true"></ins>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+  </div>
 
   <div id="last-modal" class="modal" aria-hidden="true">
     <div class="modal-card modal-last" role="dialog" aria-modal="true" aria-labelledby="last-modal-title">
@@ -214,7 +207,7 @@
           <button type="button" id="btn-last-reset" class="btn btn-ghost">♻️ <span data-i18n="button.reset">Sıfırla</span></button>
           <button type="button" id="btn-last-auto-stop" class="btn btn-ghost">⏯️ <span data-i18n="button.resume">Devam</span></button>
           <button type="button" id="btn-last-open-drawn" class="btn btn-ghost">📋 <span data-i18n="button.drawn">Çekilen Sayılar</span></button>
-          <button type="button" id="btn-last-open-board" class="btn btn-ghost">📊 <span data-i18n="button.board">1-90 Tablosu</span></button>
+          <button type="button" id="btn-last-open-board" class="btn btn-ghost">📊 <span data-i18n="button.board">Kontrol Tablosu</span></button>
         </div>
       </div>
     </div>
@@ -239,13 +232,13 @@
   <div id="board-modal" class="modal" aria-hidden="true">
     <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="board-modal-title">
       <div class="modal-header">
-        <h3 id="board-modal-title" data-i18n="modal.board.title">1-90 Tablosu</h3>
+        <h3 id="board-modal-title" data-i18n="modal.board.title">Kontrol Tablosu</h3>
         <button type="button" id="btn-close-board" class="modal-close" aria-label="Kapat">&times;</button>
       </div>
       <p class="modal-subtitle" data-i18n="modal.board.subtitle">Çekilen sayılar, tabloda yeşil olarak işaretlenir.</p>
       <div class="modal-body">
         <div class="modal-section">
-          <div id="board-90" class="board90"></div>
+          <div id="board-90-modal" class="board90"></div>
         </div>
       </div>
     </div>
@@ -259,7 +252,7 @@
       📋<span data-i18n="mobile.nav.drawn">Liste</span>
     </button>
     <button type="button" id="mobile-open-board" class="mobile-action-btn" aria-controls="board-modal">
-      📊<span data-i18n="mobile.nav.board">Tablo</span>
+      📊<span data-i18n="mobile.nav.board">Kontrol</span>
     </button>
   </nav>
 

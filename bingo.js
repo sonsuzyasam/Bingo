@@ -2,8 +2,10 @@
 
 (function(){
   // Global değişkenleri en başta tanımlayalım
-  const board = document.getElementById('board-90');
-  const gridDrawn = document.getElementById('drawn-grid');
+  const boardMain = document.getElementById('board-90');
+  const boardModalEl = document.getElementById('board-90-modal');
+  const drawnPreviewEl = document.getElementById('drawn-preview');
+  const drawnModalEl = document.getElementById('drawn-grid');
   const lastEl = document.getElementById('last-number');
   const lastModal = document.getElementById('last-modal');
   const lastModalValue = document.getElementById('last-modal-value');
@@ -45,7 +47,7 @@
       'button.call': 'Numara Çek',
       'button.last': 'Son Numara',
       'button.drawn': 'Çekilen Sayılar',
-      'button.board': '1-90 Tablosu',
+      'button.board': 'Kontrol Tablosu',
       'button.restore': 'Oyunu Geri Yükle',
       'button.reset': 'Sıfırla',
       'button.pause': 'Durdur',
@@ -59,12 +61,13 @@
       'status.auto': 'Otomatik',
       'status.manual': 'Manuel',
       'panel.draw.title': 'Çekiliş',
+      'panel.control.title': 'Kontrol Tablosu',
       'label.history': 'Son çekilenler',
       'list.drawn.title': 'Çıkan Sayılar',
       'list.drawn.info': 'Detaylı listeyi görmek için "Çekilen Sayılar" butonuna tıklayın.',
       'summary.remaining': 'Kalan numara',
       'summary.title': 'Çekiliş Özeti',
-      'summary.info': 'Çekilen sayıları görmek için "Çekilen Sayılar", tabloyu görmek için "1-90 Tablosu" butonuna dokunun.',
+      'summary.info': 'Çekilen sayıları görmek için "Çekilen Sayılar", tabloyu görmek için "Kontrol Tablosu" butonuna dokunun.',
       'settings.title': 'Ayarlar',
       'settings.tts': 'Dil (TTS)',
       'option.lang.auto': 'Otomatik (sistem)',
@@ -80,11 +83,11 @@
       'modal.drawn.title': 'Çekilen Sayılar',
       'modal.drawn.subtitle': 'En son çekilen sayılar en üstte görünür.',
       'modal.drawn.sectionTitle': 'Çekilen Sayı Listesi',
-      'modal.board.title': '1-90 Tablosu',
+      'modal.board.title': 'Kontrol Tablosu',
       'modal.board.subtitle': 'Çekilen sayılar, tabloda yeşil olarak işaretlenir.',
       'mobile.nav.last': 'Son',
       'mobile.nav.drawn': 'Liste',
-      'mobile.nav.board': 'Tablo',
+      'mobile.nav.board': 'Kontrol',
       'history.empty': 'Henüz numara yok',
       'aria.remaining': 'Kalan numara: {count}'
     },
@@ -93,7 +96,7 @@
       'button.call': 'Draw Number',
       'button.last': 'Last Number',
       'button.drawn': 'Drawn Numbers',
-      'button.board': '1-90 Board',
+      'button.board': 'Control Board',
       'button.restore': 'Restore Game',
       'button.reset': 'Reset',
       'button.pause': 'Pause',
@@ -107,12 +110,13 @@
       'status.auto': 'Automatic',
       'status.manual': 'Manual',
       'panel.draw.title': 'Draw',
+      'panel.control.title': 'Control Board',
       'label.history': 'Recent draws',
       'list.drawn.title': 'Drawn Numbers',
       'list.drawn.info': 'Tap "Drawn Numbers" to see the full list.',
       'summary.remaining': 'Numbers left',
       'summary.title': 'Draw Summary',
-      'summary.info': 'Tap "Drawn Numbers" for the list or "1-90 Board" for the board.',
+      'summary.info': 'Tap "Drawn Numbers" for the list or "Control Board" for the board.',
       'settings.title': 'Settings',
       'settings.tts': 'Language (TTS)',
       'option.lang.auto': 'Automatic (system)',
@@ -128,11 +132,11 @@
       'modal.drawn.title': 'Drawn Numbers',
       'modal.drawn.subtitle': 'The latest numbers appear at the top.',
       'modal.drawn.sectionTitle': 'Drawn Number List',
-      'modal.board.title': '1-90 Board',
+      'modal.board.title': 'Control Board',
       'modal.board.subtitle': 'Drawn numbers are highlighted in green.',
       'mobile.nav.last': 'Last',
       'mobile.nav.drawn': 'List',
-      'mobile.nav.board': 'Board',
+      'mobile.nav.board': 'Control',
       'history.empty': 'No numbers yet',
       'aria.remaining': 'Remaining numbers: {count}'
     },
@@ -141,7 +145,7 @@
       'button.call': 'Zahl ziehen',
       'button.last': 'Letzte Zahl',
       'button.drawn': 'Gezogene Zahlen',
-      'button.board': '1-90 Tafel',
+      'button.board': 'Kontrolltafel',
       'button.restore': 'Spiel wiederherstellen',
       'button.reset': 'Zurücksetzen',
       'button.pause': 'Anhalten',
@@ -155,12 +159,13 @@
       'status.auto': 'Automatisch',
       'status.manual': 'Manuell',
       'panel.draw.title': 'Ziehung',
+      'panel.control.title': 'Kontrolltafel',
       'label.history': 'Letzte Zahlen',
       'list.drawn.title': 'Gezogene Zahlen',
       'list.drawn.info': 'Für die komplette Liste "Gezogene Zahlen" tippen.',
       'summary.remaining': 'Verbleibende Zahl',
       'summary.title': 'Ziehungsübersicht',
-      'summary.info': 'Liste über "Gezogene Zahlen", Tafel über "1-90 Tafel".',
+      'summary.info': 'Liste über "Gezogene Zahlen", Übersicht über "Kontrolltafel".',
       'settings.title': 'Einstellungen',
       'settings.tts': 'Sprache (TTS)',
       'option.lang.auto': 'Automatisch (System)',
@@ -176,11 +181,11 @@
       'modal.drawn.title': 'Gezogene Zahlen',
       'modal.drawn.subtitle': 'Die neuesten Zahlen stehen oben.',
       'modal.drawn.sectionTitle': 'Liste der gezogenen Zahlen',
-      'modal.board.title': '1-90 Tafel',
+      'modal.board.title': 'Kontrolltafel',
       'modal.board.subtitle': 'Gezogene Zahlen sind grün markiert.',
       'mobile.nav.last': 'Letzte',
       'mobile.nav.drawn': 'Liste',
-      'mobile.nav.board': 'Tafel',
+      'mobile.nav.board': 'Kontrolle',
       'history.empty': 'Noch keine Zahlen',
       'aria.remaining': 'Verbleibende Zahlen: {count}'
     },
@@ -189,7 +194,7 @@
       'button.call': 'Tirer un numéro',
       'button.last': 'Dernier numéro',
       'button.drawn': 'Numéros tirés',
-      'button.board': 'Tableau 1-90',
+      'button.board': 'Tableau de contrôle',
       'button.restore': 'Restaurer la partie',
       'button.reset': 'Réinitialiser',
       'button.pause': 'Pause',
@@ -203,12 +208,13 @@
       'status.auto': 'Automatique',
       'status.manual': 'Manuel',
       'panel.draw.title': 'Tirage',
+      'panel.control.title': 'Tableau de contrôle',
       'label.history': 'Derniers tirages',
       'list.drawn.title': 'Numéros tirés',
       'list.drawn.info': 'Touchez « Numéros tirés » pour la liste complète.',
       'summary.remaining': 'Numéros restants',
       'summary.title': 'Résumé du tirage',
-      'summary.info': 'Touchez « Numéros tirés » pour la liste ou « Tableau 1-90 » pour le tableau.',
+      'summary.info': 'Touchez « Numéros tirés » pour la liste ou « Tableau de contrôle » pour la vue.',
       'settings.title': 'Paramètres',
       'settings.tts': 'Langue (TTS)',
       'option.lang.auto': 'Automatique (système)',
@@ -224,11 +230,11 @@
       'modal.drawn.title': 'Numéros tirés',
       'modal.drawn.subtitle': 'Les derniers numéros apparaissent en haut.',
       'modal.drawn.sectionTitle': 'Liste des numéros tirés',
-      'modal.board.title': 'Tableau 1-90',
+      'modal.board.title': 'Tableau de contrôle',
       'modal.board.subtitle': 'Les numéros tirés sont surlignés en vert.',
       'mobile.nav.last': 'Dernier',
       'mobile.nav.drawn': 'Liste',
-      'mobile.nav.board': 'Tableau',
+      'mobile.nav.board': 'Contrôle',
       'history.empty': 'Aucun numéro pour le moment',
       'aria.remaining': 'Numéros restants : {count}'
     },
@@ -237,7 +243,7 @@
       'button.call': 'Træk et tal',
       'button.last': 'Sidste tal',
       'button.drawn': 'Trukne tal',
-      'button.board': '1-90 Tabel',
+      'button.board': 'Kontroltabel',
       'button.restore': 'Gendan spil',
       'button.reset': 'Nulstil',
       'button.pause': 'Pause',
@@ -251,12 +257,13 @@
       'status.auto': 'Automatisk',
       'status.manual': 'Manuel',
       'panel.draw.title': 'Trækning',
+      'panel.control.title': 'Kontroltabel',
       'label.history': 'Seneste tal',
       'list.drawn.title': 'Trukne tal',
       'list.drawn.info': 'Tryk på "Trukne tal" for hele listen.',
       'summary.remaining': 'Tilbageværende tal',
       'summary.title': 'Trækningsoversigt',
-      'summary.info': 'Tryk på "Trukne tal" for listen eller "1-90 Tabel" for tabellen.',
+      'summary.info': 'Tryk på "Trukne tal" for listen eller "Kontroltabel" for oversigten.',
       'settings.title': 'Indstillinger',
       'settings.tts': 'Sprog (TTS)',
       'option.lang.auto': 'Automatisk (system)',
@@ -272,11 +279,11 @@
       'modal.drawn.title': 'Trukne tal',
       'modal.drawn.subtitle': 'De nyeste tal vises øverst.',
       'modal.drawn.sectionTitle': 'Liste over trukne tal',
-      'modal.board.title': '1-90 Tabel',
+      'modal.board.title': 'Kontroltabel',
       'modal.board.subtitle': 'Trukne tal markeres med grønt.',
       'mobile.nav.last': 'Sidste',
       'mobile.nav.drawn': 'Liste',
-      'mobile.nav.board': 'Tabel',
+      'mobile.nav.board': 'Kontrol',
       'history.empty': 'Ingen tal endnu',
       'aria.remaining': 'Tilbageværende tal: {count}'
     },
@@ -285,7 +292,7 @@
       'button.call': 'नंबर निकालें',
       'button.last': 'अंतिम नंबर',
       'button.drawn': 'निकले हुए नंबर',
-      'button.board': '1-90 तालिका',
+      'button.board': 'नियंत्रण तालिका',
       'button.restore': 'खेल पुनर्स्थापित करें',
       'button.reset': 'रीसेट',
       'button.pause': 'रोकें',
@@ -299,12 +306,13 @@
       'status.auto': 'स्वचालित',
       'status.manual': 'मैनुअल',
       'panel.draw.title': 'ड्रॉ',
+      'panel.control.title': 'नियंत्रण तालिका',
       'label.history': 'ताज़ा नंबर',
       'list.drawn.title': 'निकले हुए नंबर',
       'list.drawn.info': 'पूरी सूची के लिए "निकले हुए नंबर" पर टैप करें।',
       'summary.remaining': 'शेष नंबर',
       'summary.title': 'ड्रॉ सारांश',
-      'summary.info': 'सूची के लिए "निकले हुए नंबर" और तालिका के लिए "1-90 तालिका" पर टैप करें।',
+      'summary.info': 'सूची के लिए "निकले हुए नंबर" और तालिका दृश्य के लिए "नियंत्रण तालिका" पर टैप करें।',
       'settings.title': 'सेटिंग्स',
       'settings.tts': 'भाषा (TTS)',
       'option.lang.auto': 'स्वचालित (सिस्टम)',
@@ -320,11 +328,11 @@
       'modal.drawn.title': 'निकले हुए नंबर',
       'modal.drawn.subtitle': 'नए नंबर ऊपर दिखाई देंगे।',
       'modal.drawn.sectionTitle': 'निकले हुए नंबरों की सूची',
-      'modal.board.title': '1-90 तालिका',
+      'modal.board.title': 'नियंत्रण तालिका',
       'modal.board.subtitle': 'निकले हुए नंबर हरे रंग से हाइलाइट होंगे।',
       'mobile.nav.last': 'अंतिम',
       'mobile.nav.drawn': 'सूची',
-      'mobile.nav.board': 'तालिका',
+      'mobile.nav.board': 'नियंत्रण',
       'history.empty': 'अभी कोई नंबर नहीं',
       'aria.remaining': 'शेष नंबर: {count}'
     }
@@ -345,6 +353,13 @@
   function ensureBoardModal(){
     if(!boardModal || !boardModal.isConnected){
       boardModal = document.getElementById('board-modal');
+      if(boardModal){
+        const modalBoardGrid = boardModal.querySelector('#board-90-modal');
+        if(modalBoardGrid && !modalBoardGrid.childElementCount){
+          buildBoard(modalBoardGrid);
+          markBoard();
+        }
+      }
     }
     return boardModal;
   }
@@ -487,7 +502,8 @@
     } else {
       setUiLanguage(initialLangState.lang, { persist: true, mode: 'manual' });
     }
-    buildBoard();
+    buildBoard(boardMain);
+    buildBoard(boardModalEl);
     const restored = loadState();
     if(!restored) {
       resetCaller({ skipBackup: true, skipSave: true });
@@ -568,8 +584,10 @@
       btnMobileOpenDrawn: !!btnMobileOpenDrawn,
       btnMobileOpenBoard: !!btnMobileOpenBoard,
       lastEl: !!lastEl,
-      board: !!board,
-      gridDrawn: !!gridDrawn
+      boardMain: !!boardMain,
+      boardModalEl: !!boardModalEl,
+      drawnPreviewEl: !!drawnPreviewEl,
+      drawnModalEl: !!drawnModalEl
     });
     
     const attachTouchFriendly = (el, handler) => {
@@ -764,13 +782,19 @@
   }
 
   function highlightLatestPill(){
-    if(!gridDrawn) return;
-    const existing = gridDrawn.querySelectorAll('.pill.is-new');
-    existing.forEach(el => el.classList.remove('is-new'));
-    const first = gridDrawn.querySelector('.pill');
-    if(!first) return;
-    first.classList.add('is-new');
-    setTimeout(()=>first.classList.remove('is-new'), 800);
+    const targets = [drawnPreviewEl, drawnModalEl];
+    targets.forEach(function(container){
+      if(!container) return;
+      container.querySelectorAll('.pill.is-new').forEach(function(el){
+        el.classList.remove('is-new');
+      });
+      const first = container.querySelector('.pill');
+      if(!first) return;
+      first.classList.add('is-new');
+      setTimeout(function(){
+        first.classList.remove('is-new');
+      }, 800);
+    });
   }
 
   function setAutoStopLabel(isRunning){
@@ -1048,37 +1072,41 @@
     }
   }
 
-  function buildBoard(){
-    board.innerHTML='';
+  function buildBoard(target){
+    if(!target) return;
+    target.innerHTML='';
     for(let r=0;r<6;r++){
       for(let c=0;c<15;c++){
-        const n = r*15 + c + 1; 
-        const d = document.createElement('div');
-        d.className='cell';
-        d.dataset.n = n;
-        d.textContent = n;
-        board.appendChild(d);
+        const n = r*15 + c + 1;
+        const cell = document.createElement('div');
+        cell.className='cell';
+        cell.dataset.n = n;
+        cell.textContent = n;
+        target.appendChild(cell);
       }
     }
   }
 
   function markBoard(){
-    document.querySelectorAll('#board-90 .cell').forEach(el=>{
-      el.classList.toggle('mark', called.includes(+el.dataset.n));
+    document.querySelectorAll('.board90 .cell').forEach(function(el){
+      el.classList.toggle('mark', called.includes(Number(el.dataset.n)));
     });
   }
 
   function renderLists(){
-    if(gridDrawn) {
-      gridDrawn.innerHTML='';
-      for(const n of [...called].reverse()){
-        const s=document.createElement('span'); 
-        s.className='pill'; 
-        s.textContent=n;
-        gridDrawn.appendChild(s);
-      }
-    }
-    
+    const containers = [drawnModalEl, drawnPreviewEl];
+    const numbers = [...called].reverse();
+    containers.forEach(function(container){
+      if(!container) return;
+      container.innerHTML = '';
+      numbers.forEach(function(n){
+        const pill = document.createElement('span');
+        pill.className = 'pill';
+        pill.textContent = n;
+        container.appendChild(pill);
+      });
+    });
+
     updateRemainingProgress();
     renderLastHistory();
     markBoard();

@@ -11,11 +11,31 @@
   <title>BingoBala - PDF Kart Üretici</title>
   <link rel="stylesheet" href="./style.css" />
   <style>
+    body.pdf-page {
+      margin: 0;
+      padding: 24px;
+      background: #f5f7fb;
+      color: #0f172a;
+      font-family: "Inter", "Segoe UI", -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    body.pdf-page a {
+      color: #0f172a;
+    }
+
+    body.pdf-page h1 {
+      color: #08142c;
+      margin-top: 0;
+    }
+
     /* Mobile-first optimized styles */
     .pdf-generator {
       max-width: 100%;
       padding: 16px;
       margin: 0 auto;
+      background: rgba(255, 255, 255, 0.92);
+      border-radius: 18px;
+      box-shadow: 0 24px 40px rgba(8, 16, 32, 0.08);
     }
     
     .mobile-form {
@@ -29,6 +49,7 @@
       padding: 16px;
       border-radius: 8px;
       border: 1px solid #e0e0e0;
+      color: #0f172a;
     }
     
     .form-group label {
@@ -36,6 +57,7 @@
       font-weight: 600;
       margin-bottom: 8px;
       font-size: 1.1em;
+      color: #0b1a36;
     }
     
     .form-group input, .form-group select {
@@ -104,6 +126,13 @@
       padding: 20px;
       color: #666;
     }
+
+    .tts-note {
+      margin-top: 12px;
+      font-size: 13px;
+      color: #41506b;
+      text-align: center;
+    }
     
     @media (min-width: 768px) {
       .pdf-generator {
@@ -117,7 +146,7 @@
     }
   </style>
 </head>
-<body>
+<body class="pdf-page">
   <div class="pdf-generator">
     <a href="index.html" class="back-link">← Ana Sayfaya Dön</a>
     
@@ -197,6 +226,8 @@
     <button type="button" class="btn-generate" id="btn-pdf">
       📄 PDF Kartları Üret
     </button>
+
+    <div class="tts-note">📢 TTS varsayılan olarak açık; kartları bastıktan sonra çekiliş ekranında ses hazır.</div>
     
     <div id="loading" class="loading" style="display:none;">
       <div>PDF üretiliyor...</div>
