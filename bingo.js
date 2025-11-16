@@ -21,6 +21,14 @@
   const STORAGE_KEY = 'bingoStateV1';
   const BACKUP_KEY = 'bingoStateBackupV1';
   const UI_LANG_KEY = 'bingoUiLang';
+  const ttsLangMap = {
+    tr: 'tr-TR',
+    en: 'en-US',
+    da: 'da-DK',
+    de: 'de-DE',
+    fr: 'fr-FR',
+    hi: 'hi-IN'
+  };
   let called = [];
   let autoCallTimer = null;
   let lastAutoCallInterval = 0;
@@ -316,9 +324,16 @@
     }
   };
   let currentUiLang = fallbackUiLang;
+  let uiLanguageMode = 'auto';
 
   const ready = fn => (document.readyState==='loading' ? document.addEventListener('DOMContentLoaded', fn) : fn());
   ready(init);
+
+  function hasOptionValue(selectEl, value){
+    if(!selectEl) return false;
+    const normalized = String(value).toLowerCase();
+    return Array.from(selectEl.options || []).some(opt => String(opt.value).toLowerCase() === normalized);
+  }
 
   function translate(key, fallback = ''){
     const langDict = translations[currentUiLang] || translations[fallbackUiLang] || {};
@@ -356,20 +371,38 @@
   function getStoredUiLanguage(){
     const store = getStorage();
     if(!store) return null;
+    let raw;
     try {
-      const saved = store.getItem(UI_LANG_KEY);
-      if(saved && translations[saved]) return saved;
+      raw = store.getItem(UI_LANG_KEY);
     } catch(_) {
       return null;
+    }
+    if(!raw) return null;
+    try {
+      const parsed = JSON.parse(raw);
+      if(parsed && parsed.mode === 'manual' && parsed.lang && translations[parsed.lang]){
+        return { mode: 'manual', lang: parsed.lang };
+      }
+      if(parsed && parsed.mode === 'auto'){
+        return { mode: 'auto', lang: null };
+      }
+    } catch(_) {
+      if(raw === 'auto') return { mode: 'auto', lang: null };
+      if(translations[raw]) return { mode: 'manual', lang: raw };
     }
     return null;
   }
 
-  function saveUiLanguage(lang){
+  function saveUiLanguage(lang, options = {}){
     const store = getStorage();
     if(!store) return;
+    const mode = options.mode === 'manual' ? 'manual' : 'auto';
     try {
-      store.setItem(UI_LANG_KEY, lang);
+      store.setItem(UI_LANG_KEY, JSON.stringify({
+        mode,
+        lang: mode === 'manual' ? lang : null,
+        timestamp: Date.now()
+      }));
     } catch(_) {
       /* ignore storage issues */
     }
@@ -385,24 +418,38 @@
     }
   }
 
-  function detectUiLanguage(){
-    const stored = getStoredUiLanguage();
-    if(stored) return stored;
+  function getNavigatorLanguageCode(){
     const nav = (navigator.language || fallbackUiLang).split('-')[0].toLowerCase();
     if(translations[nav]) return nav;
     return nav === 'tr' ? 'tr' : 'en';
   }
 
+  function detectUiLanguage(){
+    const stored = getStoredUiLanguage();
+    const navLang = getNavigatorLanguageCode();
+    if(stored){
+      if(stored.mode === 'manual' && stored.lang){
+        return { lang: stored.lang, mode: 'manual' };
+      }
+      if(stored.mode === 'auto'){
+        return { lang: navLang, mode: 'auto' };
+      }
+    }
+    return { lang: navLang, mode: 'auto' };
+  }
+
   function setUiLanguage(lang, options = {}){
     const persist = options.persist !== undefined ? options.persist : true;
     const clearStored = options.clearStored === true;
+    const mode = options.mode === 'manual' ? 'manual' : (options.mode === 'auto' ? 'auto' : uiLanguageMode);
     if(!lang) lang = fallbackUiLang;
     const normalized = lang.toLowerCase();
     currentUiLang = translations[normalized] ? normalized : fallbackUiLang;
+    uiLanguageMode = mode;
     if(document && document.documentElement){
       document.documentElement.lang = currentUiLang;
     }
-    if(persist) saveUiLanguage(currentUiLang);
+    if(persist) saveUiLanguage(currentUiLang, { mode });
     else if(clearStored) clearStoredUiLanguage();
     applyTranslations();
     renderLastHistory();
@@ -414,7 +461,12 @@
   function init(){
     console.log('🚀 BingoBala başlatılıyor...');
     detectCountryAndSetTTS();
-    setUiLanguage(detectUiLanguage(), { persist: false });
+    const initialLangState = detectUiLanguage();
+    if(initialLangState.mode === 'auto') {
+      setUiLanguage(initialLangState.lang, { persist: false, mode: 'auto' });
+    } else {
+      setUiLanguage(initialLangState.lang, { persist: true, mode: 'manual' });
+    }
     buildBoard();
     const restored = loadState();
     if(!restored) {
@@ -434,12 +486,20 @@
       const langCode = lang.split('-')[0] || 'en';
       const langSelect = document.getElementById('opt-lang');
       if(langSelect) {
-        const langMap = {
-          'tr': 'tr-TR', 'en': 'en-US', 'da': 'da-DK', 
-          'de': 'de-DE', 'fr': 'fr-FR', 'hi': 'hi-IN'
-        };
-        const detectedLang = langMap[langCode];
-        if(detectedLang) langSelect.value = detectedLang;
+        const storedPref = getStoredUiLanguage();
+        if(storedPref && storedPref.mode === 'manual' && storedPref.lang){
+          const manualCode = ttsLangMap[storedPref.lang] || null;
+          if(manualCode && hasOptionValue(langSelect, manualCode)) {
+            langSelect.value = manualCode;
+          } else if(hasOptionValue(langSelect, storedPref.lang)) {
+            langSelect.value = storedPref.lang;
+          }
+        } else if(storedPref && storedPref.mode === 'auto') {
+          langSelect.value = 'auto';
+        } else {
+          const detectedLang = ttsLangMap[langCode];
+          langSelect.value = detectedLang && hasOptionValue(langSelect, detectedLang) ? detectedLang : 'auto';
+        }
       }
     } catch(e) {
       console.log('Language detection failed:', e);
@@ -579,12 +639,14 @@
       langSelect.addEventListener('change', function(){
         const val = langSelect.value;
         if(val === 'auto') {
-          clearStoredUiLanguage();
-          const autoLang = detectUiLanguage();
-          setUiLanguage(autoLang, { persist: false });
+          langSelect.value = 'auto';
+          uiLanguageMode = 'auto';
+          saveUiLanguage(null, { mode: 'auto' });
+          const autoLang = getNavigatorLanguageCode();
+          setUiLanguage(autoLang, { persist: false, mode: 'auto' });
         } else {
           const base = (val || '').split('-')[0].toLowerCase();
-          if(translations[base]) setUiLanguage(base);
+          if(translations[base]) setUiLanguage(base, { persist: true, mode: 'manual' });
         }
       });
     }
