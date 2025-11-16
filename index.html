@@ -106,7 +106,7 @@
         <section class="panel live-stats">
           <header class="panel-head">
             <span class="pill meta-pill" data-i18n="panel.control.title">📊 Kontrol Tablosu</span>
-            <button id="mobile-open-board" class="btn btn-ghost compact">🔍 <span data-i18n="button.board">Kontrol Tablosu</span></button>
+            <button id="mobile-open-board" class="btn btn-ghost compact">🔍 <span data-i18n="button.board.open">Tabloyu Aç</span></button>
           </header>
           <div class="board-wrapper">
             <div id="board-90" class="board90" aria-label="90 numaralık kontrol tablosu"></div>
@@ -115,10 +115,10 @@
 
         <section class="panel tts-panel">
           <header class="panel-head">
-            <span class="pill meta-pill">🎧 Ses &amp; Dil</span>
+            <span class="pill meta-pill" data-i18n="panel.tts.title">🎧 Sesli Okuma</span>
           </header>
           <div class="tts-body">
-            <label for="opt-lang" data-i18n="settings.tts">Dil (TTS)</label>
+            <label for="opt-lang" data-i18n="settings.tts">Okuma dili</label>
             <select id="opt-lang" class="tts-select">
               <option value="auto" data-i18n="option.lang.auto">Otomatik (sistem)</option>
               <option value="tr-TR" data-i18n="option.lang.tr">Türkçe</option>
@@ -128,7 +128,6 @@
               <option value="fr-FR" data-i18n="option.lang.fr">Français</option>
               <option value="da-DK" data-i18n="option.lang.da">Dansk</option>
             </select>
-            <p class="tts-hint">Numaralar TTS ile otomatik okunur; tercih ettiğiniz dili buradan seçebilirsiniz.</p>
           </div>
         </section>
       </aside>
@@ -204,6 +203,7 @@
       <div class="modal-body modal-body-last">
         <div id="last-modal-value" class="last-modal-number">–</div>
         <div class="last-modal-actions">
+          <button type="button" id="btn-last-call" class="btn btn-large primary">🎲 <span data-i18n="button.call">Numara Çek</span></button>
           <button type="button" id="btn-last-reset" class="btn btn-ghost">♻️ <span data-i18n="button.reset">Sıfırla</span></button>
           <button type="button" id="btn-last-auto-stop" class="btn btn-ghost">⏯️ <span data-i18n="button.resume">Devam</span></button>
           <button type="button" id="btn-last-open-drawn" class="btn btn-ghost">📋 <span data-i18n="button.drawn">Çekilen Sayılar</span></button>

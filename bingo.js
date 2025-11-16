@@ -17,6 +17,7 @@
   const btnMobileOpenLast = document.getElementById('mobile-open-last');
   const btnMobileOpenDrawn = document.getElementById('mobile-open-drawn');
   const btnMobileOpenBoard = document.getElementById('mobile-open-board');
+  const btnLastCall = document.getElementById('btn-last-call');
   const mobileViewQuery = window.matchMedia('(max-width: 700px)');
   const TOTAL_NUMBERS = 90;
   const MAX_HISTORY = 6;
@@ -48,6 +49,7 @@
       'button.last': 'Son Numara',
       'button.drawn': 'Çekilen Sayılar',
       'button.board': 'Kontrol Tablosu',
+      'button.board.open': 'Tabloyu Aç',
       'button.restore': 'Oyunu Geri Yükle',
       'button.reset': 'Sıfırla',
       'button.pause': 'Durdur',
@@ -69,7 +71,8 @@
       'summary.title': 'Çekiliş Özeti',
       'summary.info': 'Çekilen sayıları görmek için "Çekilen Sayılar", tabloyu görmek için "Kontrol Tablosu" butonuna dokunun.',
       'settings.title': 'Ayarlar',
-      'settings.tts': 'Dil (TTS)',
+      'panel.tts.title': 'Sesli Okuma',
+      'settings.tts': 'Okuma dili',
       'option.lang.auto': 'Otomatik (sistem)',
       'option.lang.tr': 'Türkçe',
       'option.lang.en': 'English',
@@ -97,6 +100,7 @@
       'button.last': 'Last Number',
       'button.drawn': 'Drawn Numbers',
       'button.board': 'Control Board',
+      'button.board.open': 'Open Board',
       'button.restore': 'Restore Game',
       'button.reset': 'Reset',
       'button.pause': 'Pause',
@@ -118,7 +122,8 @@
       'summary.title': 'Draw Summary',
       'summary.info': 'Tap "Drawn Numbers" for the list or "Control Board" for the board.',
       'settings.title': 'Settings',
-      'settings.tts': 'Language (TTS)',
+      'panel.tts.title': 'Voice Playback',
+      'settings.tts': 'Reading language',
       'option.lang.auto': 'Automatic (system)',
       'option.lang.tr': 'Turkish',
       'option.lang.en': 'English',
@@ -146,6 +151,7 @@
       'button.last': 'Letzte Zahl',
       'button.drawn': 'Gezogene Zahlen',
       'button.board': 'Kontrolltafel',
+      'button.board.open': 'Tafel öffnen',
       'button.restore': 'Spiel wiederherstellen',
       'button.reset': 'Zurücksetzen',
       'button.pause': 'Anhalten',
@@ -167,7 +173,8 @@
       'summary.title': 'Ziehungsübersicht',
       'summary.info': 'Liste über "Gezogene Zahlen", Übersicht über "Kontrolltafel".',
       'settings.title': 'Einstellungen',
-      'settings.tts': 'Sprache (TTS)',
+      'panel.tts.title': 'Sprachausgabe',
+      'settings.tts': 'Ausgabe­sprache',
       'option.lang.auto': 'Automatisch (System)',
       'option.lang.tr': 'Türkisch',
       'option.lang.en': 'Englisch',
@@ -195,6 +202,7 @@
       'button.last': 'Dernier numéro',
       'button.drawn': 'Numéros tirés',
       'button.board': 'Tableau de contrôle',
+      'button.board.open': 'Ouvrir le tableau',
       'button.restore': 'Restaurer la partie',
       'button.reset': 'Réinitialiser',
       'button.pause': 'Pause',
@@ -216,7 +224,8 @@
       'summary.title': 'Résumé du tirage',
       'summary.info': 'Touchez « Numéros tirés » pour la liste ou « Tableau de contrôle » pour la vue.',
       'settings.title': 'Paramètres',
-      'settings.tts': 'Langue (TTS)',
+      'panel.tts.title': 'Lecture vocale',
+      'settings.tts': 'Langue de lecture',
       'option.lang.auto': 'Automatique (système)',
       'option.lang.tr': 'Turc',
       'option.lang.en': 'Anglais',
@@ -244,6 +253,7 @@
       'button.last': 'Sidste tal',
       'button.drawn': 'Trukne tal',
       'button.board': 'Kontroltabel',
+      'button.board.open': 'Åbn tabellen',
       'button.restore': 'Gendan spil',
       'button.reset': 'Nulstil',
       'button.pause': 'Pause',
@@ -265,7 +275,8 @@
       'summary.title': 'Trækningsoversigt',
       'summary.info': 'Tryk på "Trukne tal" for listen eller "Kontroltabel" for oversigten.',
       'settings.title': 'Indstillinger',
-      'settings.tts': 'Sprog (TTS)',
+      'panel.tts.title': 'Taleafspilning',
+      'settings.tts': 'Læsesprog',
       'option.lang.auto': 'Automatisk (system)',
       'option.lang.tr': 'Tyrkisk',
       'option.lang.en': 'Engelsk',
@@ -293,6 +304,7 @@
       'button.last': 'अंतिम नंबर',
       'button.drawn': 'निकले हुए नंबर',
       'button.board': 'नियंत्रण तालिका',
+      'button.board.open': 'तालिका खोलें',
       'button.restore': 'खेल पुनर्स्थापित करें',
       'button.reset': 'रीसेट',
       'button.pause': 'रोकें',
@@ -314,7 +326,8 @@
       'summary.title': 'ड्रॉ सारांश',
       'summary.info': 'सूची के लिए "निकले हुए नंबर" और तालिका दृश्य के लिए "नियंत्रण तालिका" पर टैप करें।',
       'settings.title': 'सेटिंग्स',
-      'settings.tts': 'भाषा (TTS)',
+      'panel.tts.title': 'सस्वर पठन',
+      'settings.tts': 'पठन भाषा',
       'option.lang.auto': 'स्वचालित (सिस्टम)',
       'option.lang.tr': 'तुर्की',
       'option.lang.en': 'अंग्रेज़ी',
@@ -574,6 +587,7 @@
       btnCloseLast: !!btnCloseLast,
       btnLastOpenDrawn: !!btnLastOpenDrawn,
       btnLastOpenBoard: !!btnLastOpenBoard,
+      btnLastCall: !!btnLastCall,
       btnOpenDrawn: !!btnOpenDrawn,
       btnCloseDrawn: !!btnCloseDrawn,
       btnOpenBoard: !!btnOpenBoard,
@@ -720,6 +734,10 @@
     if(btnLastReset) attachTouchFriendly(btnLastReset, evt => {
       const resetDone = handleResetClick(evt);
       if(resetDone && lastModal && !lastModal.classList.contains('is-open')) openModal(lastModal);
+    });
+    if(btnLastCall) attachTouchFriendly(btnLastCall, evt => {
+      if(evt && typeof evt.preventDefault === 'function') evt.preventDefault();
+      callNumber();
     });
     if(btnLastAutoStop) attachTouchFriendly(btnLastAutoStop, toggleAutoCall);
     if(btnCloseLast) btnCloseLast.addEventListener('click', () => closeModal(lastModal));
