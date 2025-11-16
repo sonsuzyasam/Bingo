@@ -50,6 +50,7 @@
       'button.reset': 'Sıfırla',
       'button.pause': 'Durdur',
       'button.resume': 'Devam',
+      'confirm.reset': 'Çekilişi sıfırlamak istediğinizden emin misiniz? Tüm çekilen numaralar silinecek.',
       'label.autoCall': '⚙️ Otomatik Numara Çek:',
       'option.auto.off': 'Kapalı',
       'option.auto.3s': '3 saniye',
@@ -97,6 +98,7 @@
       'button.reset': 'Reset',
       'button.pause': 'Pause',
       'button.resume': 'Resume',
+      'confirm.reset': 'Are you sure you want to reset the draw? All drawn numbers will be cleared.',
       'label.autoCall': '⚙️ Auto Draw:',
       'option.auto.off': 'Off',
       'option.auto.3s': 'Every 3 seconds',
@@ -144,6 +146,7 @@
       'button.reset': 'Zurücksetzen',
       'button.pause': 'Anhalten',
       'button.resume': 'Fortsetzen',
+      'confirm.reset': 'Ziehung wirklich zurücksetzen? Alle gezogenen Zahlen werden gelöscht.',
       'label.autoCall': '⚙️ Automatische Ziehung:',
       'option.auto.off': 'Aus',
       'option.auto.3s': 'Alle 3 Sekunden',
@@ -191,6 +194,7 @@
       'button.reset': 'Réinitialiser',
       'button.pause': 'Pause',
       'button.resume': 'Reprendre',
+      'confirm.reset': 'Voulez-vous vraiment réinitialiser le tirage ? Tous les numéros seront effacés.',
       'label.autoCall': '⚙️ Tirage automatique :',
       'option.auto.off': 'Désactivé',
       'option.auto.3s': 'Toutes les 3 secondes',
@@ -238,6 +242,7 @@
       'button.reset': 'Nulstil',
       'button.pause': 'Pause',
       'button.resume': 'Fortsæt',
+      'confirm.reset': 'Vil du nulstille trækket? Alle trukne tal bliver slettet.',
       'label.autoCall': '⚙️ Automatisk trækning:',
       'option.auto.off': 'Fra',
       'option.auto.3s': 'Hver 3. sekund',
@@ -285,6 +290,7 @@
       'button.reset': 'रीसेट',
       'button.pause': 'रोकें',
       'button.resume': 'जारी रखें',
+      'confirm.reset': 'क्या आप वाकई ड्रॉ रीसेट करना चाहते हैं? सभी निकले हुए नंबर मिटा दिए जाएंगे।',
       'label.autoCall': '⚙️ स्वचालित ड्रॉ:',
       'option.auto.off': 'बंद',
       'option.auto.3s': 'हर 3 सेकंड',
@@ -593,7 +599,12 @@
     const openDrawnHandler = evt => {
       if(evt && typeof evt.preventDefault === 'function') evt.preventDefault();
       clearAutoCloseTimer();
-      openModal(drawnModal);
+      const targetModal = drawnModal || document.getElementById('drawn-modal');
+      if(!targetModal){
+        console.warn('Çekilen sayılar penceresi bulunamadı.');
+        return;
+      }
+      openModal(targetModal);
       if(!switchingFromLast) reopenLastFrom = null;
     };
     const openBoardHandler = evt => {
@@ -665,9 +676,8 @@
     }
     attachTouchFriendly(btnMobileOpenLast, openLastHandler);
     if(btnLastReset) attachTouchFriendly(btnLastReset, evt => {
-      if(evt && typeof evt.preventDefault === 'function') evt.preventDefault();
-      handleResetClick();
-      if(lastModal && !lastModal.classList.contains('is-open')) openModal(lastModal);
+      const resetDone = handleResetClick(evt);
+      if(resetDone && lastModal && !lastModal.classList.contains('is-open')) openModal(lastModal);
     });
     if(btnLastAutoStop) attachTouchFriendly(btnLastAutoStop, toggleAutoCall);
     if(btnCloseLast) btnCloseLast.addEventListener('click', () => closeModal(lastModal));
@@ -752,8 +762,15 @@
     });
   }
 
-  function handleResetClick(){
+  function handleResetClick(evt, options = {}){
+    if(evt && typeof evt.preventDefault === 'function') evt.preventDefault();
+    const { force = false } = options;
+    if(!force && called.length){
+      const message = translate('confirm.reset', 'Çekilişi sıfırlamak istediğinizden emin misiniz? Tüm çekilen numaralar silinecek.');
+      if(!window.confirm(message)) return false;
+    }
     resetCaller({ skipBackup: !called.length });
+    return true;
   }
 
   function getStorage(){
