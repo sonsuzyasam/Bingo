@@ -586,19 +586,22 @@
         el.addEventListener('pointerup', function(evt){
           if(evt.pointerType === 'touch'){
             touchHandled = true;
-            evt.preventDefault();
+            if(evt.cancelable) evt.preventDefault();
             handler(evt);
             setTimeout(() => { touchHandled = false; }, 0);
           }
         });
-      } else {
-        el.addEventListener('touchend', function(evt){
-          touchHandled = true;
-          evt.preventDefault();
-          handler(evt);
-          setTimeout(() => { touchHandled = false; }, 0);
-        }, { passive: false });
       }
+      el.addEventListener('touchend', function(evt){
+        if(touchHandled) {
+          touchHandled = false;
+          return;
+        }
+        touchHandled = true;
+        if(evt.cancelable) evt.preventDefault();
+        handler(evt);
+        setTimeout(() => { touchHandled = false; }, 0);
+      }, { passive: false });
     };
 
     if(mobileViewQuery && typeof mobileViewQuery.addEventListener === 'function'){
